@@ -1,0 +1,27 @@
+﻿@using NuGet.Services.Status
+@using System.Linq
+@model ServiceStatus
+
+@{
+    if (Model == null)
+    {
+        return;
+    }
+
+    var events = Model.Events;
+    if (events != null)
+    {
+        var messages = events.Where(e => e.Messages != null).SelectMany(e => e.Messages);
+        foreach (var message in messages.OrderByDescending(m => m.Time))
+        {
+            <div class="row update">
+                <div class="col-xs-3">
+                    <time datetime="@message.Time.ToString("u")" data-format="LLL">@message.Time.ToString("u")</time>
+                </div>
+                <div class="col-xs-9">
+                    @Html.Raw(message.GetHtmlContents())
+                </div>
+            </div>
+        }
+    }
+}

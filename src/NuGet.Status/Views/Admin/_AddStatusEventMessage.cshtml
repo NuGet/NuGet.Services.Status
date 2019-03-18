@@ -1,0 +1,55 @@
+﻿@model AddStatusEventMessage
+
+<h4>
+    New message
+</h4>
+
+@if (Model.EndTime != null)
+{
+    <p>
+        <i>This event is no longer active and any new messages posted may not appear prominently on the page.</i>
+        <br />
+        If you would like to post a message to the status page, it is recommended that you update an active event or create a new one.
+    </p>
+}
+
+@using (Html.BeginForm("AddMessage", "Admin"))
+{
+    @Html.AntiForgeryToken()
+
+    @Html.HiddenFor(x => x.AffectedComponentPath)
+    @Html.HiddenFor(x => x.AffectedComponentStatus)
+    @Html.HiddenFor(x => x.StartTime)
+    @Html.HiddenFor(x => x.EndTime)
+
+    <div class="form-group">
+        @Html.LabelFor(x => x.Message)
+        <br />
+        @Html.TextAreaFor(x => x.Message)
+        <br />
+        @Html.ValidationMessageFor(x => x.Message)
+    </div>
+
+    if (Model.EndTime == null)
+    {
+        <div class="form-group">
+            @Html.CheckBoxFor(x => x.ShouldDeactivate)
+            @Html.LabelFor(x => x.ShouldDeactivate)
+            <p>
+                This event will continue to show on the status page and affect the status posted until it is deactivated.
+                <br />
+                The status backend will continue to update this event (and post a message when it ends) unless it is deactivated manually.
+                <br />
+                When this event is deactivated, it will still show on the page for a period of time but will not affect the status of the page.
+                <br />
+                <i>If this event was created manually, the status backend will not update it and it <b>MUST</b> be manually deactivated when it is no longer customer-impacting.</i>
+            </p>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-xs-12">
+            <input type="submit" class="btn btn-primary form-control" value="Add" />
+        </div>
+    </div>
+}

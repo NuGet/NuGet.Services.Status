@@ -1,0 +1,34 @@
+﻿@model EditStatusEventMessage
+
+@helper FormHiddenFor()
+{
+    @Html.AntiForgeryToken()
+
+    @Html.HiddenFor(x => x.AffectedComponentPath)
+    @Html.HiddenFor(x => x.AffectedComponentStatus)
+    @Html.HiddenFor(x => x.StartTime)
+    @Html.HiddenFor(x => x.EndTime)
+    @Html.HiddenFor(x => x.Timestamp)
+}
+
+@using (Html.BeginForm("EditMessage", "Admin"))
+{
+    @FormHiddenFor()
+
+    <div class="form-group">
+        @Html.LabelFor(x => x.EditMessage)
+        <br />
+        @Html.TextAreaFor(x => x.EditMessage)
+        <br />
+        @Html.ValidationMessageFor(x => x.EditMessage)
+    </div>
+
+    <div class="row">
+        <div class="col-xs-6">
+            <button type="submit" class="btn btn-primary form-control" name="Delete" value="false">Edit</button>
+        </div>
+        <div class="col-xs-6">
+            <button type="submit" class="btn btn-primary form-control" name="Delete" value="true">Delete</button>
+        </div>
+    </div>
+}

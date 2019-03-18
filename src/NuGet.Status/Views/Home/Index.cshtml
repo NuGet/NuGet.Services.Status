@@ -1,0 +1,68 @@
+﻿@using NuGet.Services.Status
+@model ServiceStatus
+@{
+    ViewBag.Title = "Status";
+}
+
+@section Meta {
+    <meta http-equiv="refresh" content="300">
+}
+
+@section BottomScripts {
+    <script type="text/javascript">
+        @if (Model != null)
+        {
+            foreach (var containerId in Model.ServiceRootComponent.SubComponents.Select(c => c.ToHtmlSafePathId()))
+            {
+                <text>window.nuget.configureExpanderHeading("@containerId");</text>
+            }
+        }
+    </script>
+}
+
+<section role="main" class="main-container container page-status">
+    <div class="row">
+        <div class="col-xs-12">
+            <h1>Status</h1>
+            @Html.Partial("_GeneralStatus", Model)
+            @Html.Partial("_LatestStatusUpdate", Model)
+
+            <p>
+                We are continuously monitoring the status of <a href="https://www.nuget.org">NuGet.org</a> and its related services.
+                We post a note on this site if we experience any interruptions in service.
+                @if (Model != null)
+                {
+                    <text>If you are having problems connecting to NuGet and do not see a notice posted, please email <a href="mailto:support@nuget.org">support@nuget.org</a> or reach out to us on Twitter <a href="https://twitter.com/nuget">(@@nuget)</a>.</text>
+                }
+            </p>
+
+            @if (Model == null)
+            {
+                <p>
+                    <b>This page just failed to fetch the status updates posted by the NuGet team.</b>
+                    If you are experiencing any interruptions in service, please check back in 10 minutes.
+                    If this page is still failing to fetch status updates at that time, please email <a href="mailto:support@nuget.org">support@nuget.org</a> or reach out to us on Twitter <a href="https://twitter.com/nuget">(@@nuget)</a>.
+                </p>
+            }
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            @Html.Partial("_ServiceStatus", Model)
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            @Html.Partial("_CdnStatus", Model)
+        </div>
+    </div>
+    @if (Model != null && Model.Events != null && Model.Events.Any())
+    {
+        <div class="row">
+            <div class="col-xs-12">
+                <h2>History</h2>
+                @Html.Partial("_StatusUpdates", Model)
+            </div>
+        </div>
+    }
+</section>

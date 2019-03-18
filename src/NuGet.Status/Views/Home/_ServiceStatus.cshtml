@@ -1,0 +1,142 @@
+﻿@using NuGet.Services.Status
+@using NuGet.Status.Utilities
+@using System.Linq
+@model ServiceStatus
+
+@helper RenderComponentClass(IReadOnlyComponent component)
+{
+    switch (component.Status)
+    {
+        case ComponentStatus.Up:
+            <text>status-up</text>
+            break;
+        case ComponentStatus.Down:
+            <text>status-down</text>
+            break;
+        default:
+            <text>status-degraded</text>
+            break;
+    }
+}
+
+@helper RenderComponentIcon(ComponentStatus status)
+{
+    switch (status)
+    {
+        case ComponentStatus.Up:
+            <i class="ms-Icon ms-Icon--CheckMark"></i><span>Operational</span>
+            break;
+        case ComponentStatus.Down:
+            <i class="ms-Icon ms-Icon--Cancel"></i><span>Outage</span>
+            break;
+        case ComponentStatus.Degraded:
+            <i class="ms-Icon ms-Icon--Warning"></i><span>Degraded</span>
+            break;
+        default:
+            <i class="ms-Icon ms-Icon--Warning"></i><span>Unknown</span>
+            break;
+    }
+}
+
+@helper RenderComponentIcon(IReadOnlyComponent component)
+{
+    @RenderComponentIcon(component.Status)
+}
+
+@helper RenderSubComponent(IReadOnlyComponent subComponent, int level = 0)
+{
+    <tr>
+        <td>
+            @for (var i = 0; i < level; i++)
+            {
+                @:<span class="nonaggregate">
+            }
+
+            @subComponent.Name
+
+            @for (var i = 0; i < level; i++)
+            {
+                @:</span>
+            }
+        </td>
+        <td>
+            @Html.Raw(subComponent.Description)
+        </td>
+        <td>
+            @RenderComponentIcon(subComponent)
+        </td>
+    </tr>
+
+    foreach (var subSubComponent in subComponent.SubComponents)
+    {
+        @RenderSubComponent(subSubComponent, level + 1)
+    }
+}
+
+@helper RenderComponent(IReadOnlyComponent component)
+{
+    var isAggregate = component.SubComponents != null && component.SubComponents.Any();
+    var containerId = isAggregate ? component.ToHtmlSafePathId() : "";
+
+    var shouldExpand = component.Status != ComponentStatus.Up;
+
+    <tbody class="aggregate @RenderComponentClass(component)">
+        <tr>
+            @if (isAggregate)
+            {
+                <td>
+                    <a class="@(shouldExpand ? "" : "collapsed")" href="#" role="button" data-toggle="collapse" data-target="#@containerId"
+                       aria-expanded="@(shouldExpand ? "true" : "false")" aria-controls="@containerId" id="show-@containerId">
+                        <i class="ms-Icon ms-Icon--@(shouldExpand ? "ChevronDown" : "ChevronRight")" aria-hidden="true"></i>
+                        <span>@component.Name</span>
+                    </a>
+                </td>
+            }
+            else
+            {
+                <td>
+                    @component.Name
+                </td>
+            }
+            <td>
+                @Html.Raw(component.Description)
+            </td>
+            <td>
+                @RenderComponentIcon(component)
+            </td>
+        </tr>
+    </tbody>
+
+
+    if (isAggregate)
+    {
+        <tbody class="panel panel-default panel-collapse collapse @(shouldExpand ? "in" : "")" aria-expanded="@(shouldExpand ? "true" : "false")" id="@containerId">
+            @foreach (var subComponent in component.SubComponents)
+            {
+                @RenderSubComponent(subComponent)
+            }
+        </tbody>
+    }
+}
+
+@if (Model != null)
+{
+    <h2>Services Status</h2>
+
+    <p class="sr-only" id="service-status-table-caption">
+        The status of NuGet services.
+    </p>
+    <table class="table borderless" aria-describedby="service-status-table-caption">
+        <thead>
+            <tr class="headings">
+                <th scope="col">Name</th>
+                <th scope="col">Description</th>
+                <th scope="col">Status</th>
+            </tr>
+        </thead>
+        @foreach (var subcomponent in Model.ServiceRootComponent.SubComponents)
+        {
+            @RenderComponent(subcomponent)
+        }
+    </table>
+}

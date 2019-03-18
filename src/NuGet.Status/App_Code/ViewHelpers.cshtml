@@ -1,0 +1,113 @@
+﻿@using System.Web.Mvc
+@using System.Web.Mvc.Html
+@using NuGet.Status.Helpers
+@using NuGetGallery
+@using NuGetGallery.Helpers
+
+@helper GetColumnClasses(string screenSize, int? columns)
+{
+    const int TotalColumns = 12;
+    if (!columns.HasValue)
+    {
+        return;
+    }
+
+    var offset = (TotalColumns - columns.Value) / 2;
+    var columnsClass = "col-" + screenSize + "-" + columns.Value;
+    var offsetClass = offset == 0 ? string.Empty : " col-" + screenSize + "-offset-" + offset;
+
+    @(columnsClass + " " + offsetClass)
+}
+
+@helper GetColumnClasses(dynamic viewBag)
+{
+    int? smPageColumns = 12;
+    if (viewBag.SmPageColumns != null)
+    {
+        smPageColumns = (int)viewBag.SmPageColumns;
+    }
+
+    int? mdPageColumns = null;
+    if (viewBag.MdPageColumns != null)
+    {
+        mdPageColumns = (int)viewBag.MdPageColumns;
+    }
+
+    @(GetColumnClasses("sm", smPageColumns) + " " + GetColumnClasses("md", mdPageColumns))
+}
+
+@helper Alert(Func<MvcHtmlString, HelperResult> htmlContent, string subclass, string icon, bool isAlertRole = false)
+{
+    // There are no alerts on the status page.
+}
+
+@helper AlertInfo(Func<MvcHtmlString, HelperResult> htmlContent, bool isAlertRole = false)
+{
+    // There are no alerts on the status page.
+}
+
+@helper AlertWarning(Func<MvcHtmlString, HelperResult> htmlContent, bool isAlertRole = false)
+{
+    // There are no alerts on the status page.
+}
+
+@helper AlertDanger(Func<MvcHtmlString, HelperResult> htmlContent, bool isAlertRole = true)
+{
+    // There are no alerts on the status page.
+}
+
+@helper AnalyticsScript()
+{}
+
+@helper InstrumentationScript()
+{}
+
+@helper ReleaseMeta()
+{
+    // There is no release metadata displayed for the status page.
+}
+
+@helper ReleaseTag()
+{
+    // There is no release tag displayed for the status page.
+}
+
+@helper ImageFallback(string url)
+{
+    <text>onerror="this.src='@url'; this.onerror = null;"</text>
+}
+
+@helper GravatarImage(string email, string username, int size)
+{
+    // Gravatars are not displayed on the status page.
+}
+
+@helper ErrorPage(UrlHelper url, System.Web.Mvc.HtmlHelper html, string errorNumber, string errorName, Func<MvcHtmlString, HelperResult> errorTextMain, Func<MvcHtmlString, HelperResult> errorTextSub = null)
+{
+    <section role="main" class="container main-container">
+        <div class="row page-error">
+            <div class="col-sm-12 ms-fontWeight-light">
+                <p class="oops">Oops!</p>
+                <p class="error-title">Error @errorNumber - @errorName</p>
+                <div class="error-text">
+                    <div class="text-main">
+                        @errorTextMain(MvcHtmlString.Empty)
+                    </div>
+                    @if (errorTextSub != null)
+                    {
+                        <div class="text-subtext">
+                            @errorTextSub(MvcHtmlString.Empty)
+                        </div>
+                    }
+                </div>
+
+                <p class="error-action">Get me out of here! <a href="@url.Home()">Go home</a></p>
+                <p class="error-action">Wondering if NuGet is down? <a href="/">Check our status</a></p>
+                <p class="error-action">Looking for a package? <a href="@url.PackageList()">Try searching</a></p>
+                <p class="error-action">Package you're looking for doesn't exist? <a href="https://docs.microsoft.com/en-us/nuget/quickstart/create-and-publish-a-package">Make one</a></p>
+                <p class="error-action">Pretty sure we messed up? <a href="https://github.com/NuGet/NuGetGallery/issues">File a bug</a></p>
+                <p class="error-action">Can't get enough NuGet? <a href="https://twitter.com/nuget">Follow us</a></p>
+            </div>
+        </div>
+    </section>
+}

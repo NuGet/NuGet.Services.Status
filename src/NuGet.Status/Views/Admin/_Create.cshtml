@@ -1,0 +1,53 @@
+﻿@model CreateStatusEvent
+
+@using (Html.BeginForm("CreateNewEvent", "Admin"))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-group">
+        @Html.LabelFor(x => x.AffectedComponentPath)
+        <p>
+            This must be a valid path as displayed in the table above.
+            If the event does not affect a specific part of the site, use "NuGet".
+        </p>
+        @Html.TextAreaFor(x => x.AffectedComponentPath)
+        <br />
+        @Html.ValidationMessageFor(x => x.AffectedComponentPath)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(x => x.AffectedComponentStatus)
+        <p>
+            If multiple events affect the same component, the most severe status will be shown.
+        </p>
+        @Html.EnumDropDownListFor(x => x.AffectedComponentStatus)
+        <br />
+        @Html.ValidationMessageFor(x => x.AffectedComponentStatus)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(x => x.Message)
+        <br />
+        @Html.TextAreaFor(x => x.Message)
+        <br />
+        @Html.ValidationMessageFor(x => x.Message)
+    </div>
+
+    <div class="form-group">
+        @Html.CheckBoxFor(x => x.IsActive)
+        @Html.LabelFor(x => x.IsActive)
+        <p>
+            Active events show on the status page and affect the status posted.
+            <br />
+            Deactivated events still show on the page for a period of time but do not affect the status of the page.
+            <br />
+            <i>Manually created events <b>MUST</b> be manually deactivated and will not be automatically deactivated by the status backend.</i>
+        </p>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12">
+            <input type="submit" class="btn btn-primary form-control" value="Post" />
+        </div>
+    </div>
+}

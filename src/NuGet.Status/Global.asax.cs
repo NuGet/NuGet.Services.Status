@@ -72,12 +72,5 @@ namespace NuGet.Status
                 "Exception thrown by request!", 
                 Server.GetLastError());
         }
-
-        private static JObject GetConfigFile(string filename)
-        {
-            var configPath = HostingEnvironment.MapPath($@"~/App_Data/{filename}.json");
-            var configJson = File.ReadAllText(configPath);
-            return JObject.Parse(configJson);
-        }
     }
 }

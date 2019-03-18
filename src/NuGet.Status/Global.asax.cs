@@ -11,6 +11,7 @@ using System.Web.Hosting;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using Microsoft.ApplicationInsights.Extensibility;
 using Newtonsoft.Json.Linq;
 using NuGet.Services.Configuration;
 using NuGet.Status.Configuration;
@@ -26,16 +27,6 @@ namespace NuGet.Status
         static MvcApplication()
         {
             var configurationDictionary = ConfigurationManager.AppSettings.AllKeys.ToDictionary(key => key, key => ConfigurationManager.AppSettings[key]);
-
-            var filename = configurationDictionary["Config:FileName"];
-            var configPath = HostingEnvironment.MapPath($@"~/App_Data/{filename}.json");
-            var configJson = File.ReadAllText(configPath);
-            var config = JObject.Parse(configJson);
-            foreach (var property in config.Properties())
-            {
-                configurationDictionary[property.Name] = property.Value.ToString();
-            }
-
             var secretReaderFactory = new SecretReaderFactory(configurationDictionary);
             var secretReader = secretReaderFactory.CreateSecretReader();
             var secretInjector = secretReaderFactory.CreateSecretInjector(secretReader);
@@ -59,6 +50,13 @@ namespace NuGet.Status
             UrlExtensions.BaseUrl = ConfigurationProvider
                 .GetOrDefaultSync("NuGetBaseUrl", "https://www.nuget.org/")
                 .TrimEnd('/');
+
+            var instrumentationKey = ConfigurationProvider
+                .GetOrDefaultSync("ApplicationInsightsKey", string.Empty);
+            if (!string.IsNullOrWhiteSpace(instrumentationKey))
+            {
+                TelemetryConfiguration.Active.InstrumentationKey = instrumentationKey;
+            }
 #pragma warning restore CS0618 // Type or member is obsolete
 
             HostingEnvironment.QueueBackgroundWorkItem(token =>

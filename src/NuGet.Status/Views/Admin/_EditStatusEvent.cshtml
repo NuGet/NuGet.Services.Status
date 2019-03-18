@@ -1,0 +1,54 @@
+﻿@model EditStatusEvent
+
+<h4>
+    Edit event
+</h4>
+
+@using (Html.BeginForm("EditEvent", "Admin"))
+{
+    @Html.AntiForgeryToken()
+
+    @Html.HiddenFor(x => x.AffectedComponentPath)
+    @Html.HiddenFor(x => x.StartTime)
+    @Html.HiddenFor(x => x.EndTime)
+
+    <div class="form-group">
+        @Html.LabelFor(x => x.AffectedComponentStatus)
+        <p>
+            If multiple events affect the same component, the most severe status will be shown.
+        </p>
+        @Html.EnumDropDownListFor(x => x.AffectedComponentStatus)
+        <br />
+        @Html.ValidationMessageFor(x => x.AffectedComponentStatus)
+    </div>
+
+    if (Model.IsActive)
+    {
+        <div class="form-group">
+            @Html.CheckBoxFor(x => x.IsActive)
+            @Html.LabelFor(x => x.IsActive)
+            <p>
+                This event will continue to show on the status page and affect the status posted until it is deactivated.
+                <br />
+                The status backend will continue to update this event (and post a message when it ends) unless it is deactivated manually.
+                <br />
+                When this event is deactivated, it will still show on the page for a period of time but will not affect the status of the page.
+                <br />
+                <i>If this event was created manually, the status backend will not update it and it <b>MUST</b> be manually deactivated when it is no longer customer-impacting.</i>
+            </p>
+        </div>
+    }
+    else
+    {
+        @Html.HiddenFor(x => x.IsActive)
+    }
+
+    <div class="row">
+        <div class="col-xs-6">
+            <button type="submit" class="btn btn-primary form-control" name="Delete" value="false">Edit</button>
+        </div>
+        <div class="col-xs-6">
+            <button type="submit" class="btn btn-primary form-control" name="Delete" value="true">Delete</button>
+        </div>
+    </div>
+}

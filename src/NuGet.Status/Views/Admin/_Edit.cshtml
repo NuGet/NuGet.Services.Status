@@ -1,0 +1,43 @@
+﻿@using NuGet.Services.Status
+@model Event
+
+@{
+    var containerId = Model.ToHtmlSafeRowKeyId();
+}
+
+<h3>
+    <a class="collapsed" href="#" role="button" data-toggle="collapse" data-target="#@containerId"
+       aria-expanded="false" aria-controls="@containerId" id="show-@containerId">
+        <i class="ms-Icon ms-Icon--ChevronRight" aria-hidden="true"></i>
+        <span>Event affecting '@Model.AffectedComponentPath' at '@Model.StartTime'</span>
+    </a>
+</h3>
+<div class="collapse" aria-expanded="false" id="@containerId">
+    @Html.Partial("_EditStatusEvent", new EditStatusEvent(Model))
+    <br />
+
+    @{
+        var messageIndex = 0;
+    }
+
+    @foreach (var message in Model.Messages)
+    {
+        <h4>
+            Message @(++messageIndex)
+        </h4>
+        <div class="row">
+            <div class="col-xs-3">
+                @message.Time
+            </div>
+            <div class="col-xs-9">
+                @Html.Raw(message.GetHtmlContents())
+            </div>
+        </div>
+        <br />
+        @Html.Partial("_EditStatusEventMessage", new EditStatusEventMessage(Model, message))
+        <br />
+    }
+
+    @Html.Partial("_AddStatusEventMessage", new AddStatusEventMessage(Model))
+</div>
+<hr />

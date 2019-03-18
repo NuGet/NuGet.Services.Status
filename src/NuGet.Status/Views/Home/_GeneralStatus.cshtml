@@ -1,0 +1,44 @@
+﻿@using NuGet.Services.Status
+@model ServiceStatus
+
+@{
+    var statusClass = "status-degraded";
+    var icon = "Warning";
+    var message = "We can't reach our service status checks.";
+    var lastUpdated = DateTime.MinValue;
+
+    if (Model != null)
+    {
+        lastUpdated = new[] { Model.LastBuilt, Model.LastUpdated }.Max();
+        var rootComponent = Model.ServiceRootComponent;
+        if (rootComponent.Status == ComponentStatus.Up)
+        {
+            statusClass = "status-up";
+            icon = "CheckMark";
+            message = "All systems are operational.";
+        }
+        else if (rootComponent.Status == ComponentStatus.Down)
+        {
+            statusClass = "status-down";
+            icon = "Cancel";
+            message = "We are experiencing an outage.";
+        }
+        else if (rootComponent.Status == ComponentStatus.Degraded)
+        {
+            message = "We are currently degraded.";
+        }
+    }
+}
+
+<div class="status-general @statusClass">
+    <p>
+        <b>
+            <i class="ms-Icon ms-Icon--@icon" aria-hidden="true"></i>
+            <span class="text-span">@message</span>
+        </b>
+        @if (lastUpdated != DateTime.MinValue)
+        {
+            <span class="text-span last-checked">Last checked <span data-datetime="@lastUpdated.ToString("O")">@lastUpdated.ToNuGetShortDateString()</span>.</span>
+        }
+    </p>
+</div>

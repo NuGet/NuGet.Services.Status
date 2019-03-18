@@ -1,0 +1,196 @@
+﻿@using NuGet.Services.Status
+@using NuGet.Status.Controllers
+@using NuGet.Status.Models
+@model ServiceStatus
+@{
+    ViewBag.Title = "Modify Status";
+
+    var containerIdCurrent = "current";
+    var containerIdCreate = "create";
+    var containerIdEdit = "edit";
+}
+
+<section role="main" class="main-container container page-status">
+    <div class="row">
+        <div class="col-xs-12">
+            @{
+                var updated = TempData[AdminController.UpdatedTempDataKey];
+            }
+            @if (updated != null)
+            {
+                if ((bool)updated)
+                {
+                    <br />
+                    <p>
+                        <b>Your change has been queued!</b> The status backend will attempt to post your message the next time it runs. If you notice that after a couple minutes, status has been updated but your change has not been applied, please try again.
+                    </p>
+                }
+                else
+                {
+                    <br />
+                    <p>
+                        <b>Your change failed!</b> It is likely that the status backend updated and the data you edited on this page became outdated. Please try again.
+                    </p>
+                }
+            }
+
+            <h1>Modify Status</h1>
+            <p>
+                Use this page to create, edit, and delete messages on the status page.
+                <br />
+                All data on this status page is powered by a JSON file output by the status backend.
+            </p>
+
+            @if (Model != null)
+            {
+                <h2>
+                    <a href="#" role="button" data-toggle="collapse" data-target="#@containerIdCurrent"
+                       aria-expanded="true" aria-controls="@containerIdCurrent" id="show-@containerIdCurrent">
+                        <i class="ms-Icon ms-Icon--ChevronDown" aria-hidden="true"></i>
+                        <span>Current Status</span>
+                    </a>
+                </h2>
+                <div class="collapse in" aria-expanded="true" id="@containerIdCurrent">
+                    <p>
+                        View the JSON file that is powering this status page <a href="@Url.RouteUrl("Json")">here</a>.
+                    </p>
+
+                    <h3>Last Built</h3>
+                    <p>
+                        The JSON file was last built at <b>@Model.LastBuilt</b>.
+                        <br />
+                        If this is outdated, the status backend is not running.
+                    </p>
+
+                    <h3>Last Updated</h3>
+                    <p>
+                        The JSON file was last updated at <b>@Model.LastUpdated</b>.
+                        <br />
+                        If this is outdated, the status backend is running, but failing to update.
+                    </p>
+
+                    <h3>
+                        Components
+                    </h3>
+                    <p>
+                        The JSON file contains the components listed in the table below.
+                    </p>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Path</th>
+                                <th>Description</th>
+                                <th class="text-center">Status</th>
+                                <th class="text-right">&nbsp;</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var component in Model.ServiceRootComponent.GetAllComponents())
+                            {
+                                <tr class="component-row">
+                                    <td>@component.Path</td>
+                                    <td>@component.Description</td>
+                                    <td class="text-center">@component.Status.ToString()</td>
+                                    <td class="text-right">
+                                        <a title="Create a new event affecting @component.Path" href="#@containerIdCreate">
+                                            <i class="ms-Icon ms-Icon--Edit" aria-hidden="true"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2>
+                    <a class="collapsed" href="#" role="button" data-toggle="collapse" data-target="#@containerIdCreate"
+                       aria-expanded="false" aria-controls="@containerIdCreate" id="show-@containerIdCreate">
+                        <i class="ms-Icon ms-Icon--ChevronRight" aria-hidden="true"></i>
+                        <span>Create New Event</span>
+                    </a>
+                </h2>
+                <div class="collapse" aria-expanded="false" id="@containerIdCreate">
+                    <p>
+                        Use this to mark a new component of the site as impacted and post a message on the status page.
+                        <br />
+                        <i>If the status page already shows the desired component of the site as impacted, find the event in the list below and edit it instead of creating a new event.</i>
+                    </p>
+                    @Html.Partial("_Create", new CreateStatusEvent())
+                </div>
+
+                if (Model.Events != null && Model.Events.Any())
+                {
+                    <h2>
+                        <a class="collapsed" href="#" role="button" data-toggle="collapse" data-target="#@containerIdEdit"
+                           aria-expanded="false" aria-controls="@containerIdEdit" id="show-@containerIdEdit">
+                            <i class="ms-Icon ms-Icon--ChevronRight" aria-hidden="true"></i>
+                            <span>Edit Existing Events</span>
+                        </a>
+                    </h2>
+                    <div class="collapse" aria-expanded="false" id="@containerIdEdit">
+                        @foreach (var existingEvent in Model.Events.OrderByDescending(x => x.StartTime))
+                        {
+                            @Html.Partial("_Edit", existingEvent)
+                        }
+                    </div>
+                }
+            }
+            else
+            {
+                <p>
+                    <b>This page failed to load the service status!</b>
+                    <br />
+                    The service status cannot be updated if the current service status cannot be loaded.
+                </p>
+            }
+        </div>
+    </div>
+</section>
+
+@section BottomScripts {
+    <script type="text/javascript">
+        window.nuget.configureExpanderHeading("@containerIdCurrent");
+        window.nuget.configureExpanderHeading("@containerIdCreate");
+        window.nuget.configureExpanderHeading("@containerIdEdit");
+
+        // Configure "create event for this component" links.
+        var createContainer = $("#@containerIdCreate");
+        var affectedComponentPathTextArea = createContainer.find("#AffectedComponentPath");
+        var affectedComponentStatusTextArea = createContainer.find("#AffectedComponentStatus");
+        var messageTextArea = createContainer.find("#Message");
+        $(".component-row").each(
+            function (index, element) {
+                var setupLink = function (path, link) {
+                    link.click(
+                        function () {
+                            // Fill out form with default information.
+                            affectedComponentPathTextArea.text(path);
+
+                            var name = path.split("/").slice(1).reverse().join(" ");
+                            var status = affectedComponentStatusTextArea.children("option:selected").text().toLowerCase();
+                            var message = "**" + name + " is " + status + ".** You may encounter issues <doing what this component does>.";
+                            messageTextArea.text(message);
+
+                            // Focus on the form.
+                            createContainer.collapse('show');
+                            createContainer.on('shown.bs.collapse', function () {
+                                affectedComponentPathTextArea.focus();
+                            })
+                        });
+                };
+
+                var columns = $(element).children();
+                var path = columns.first().text();
+                var link = columns.last().children("a");
+                setupLink(path, link);
+            });
+
+        @if (Model != null && Model.Events != null)
+        {
+            foreach (var containerId in Model.Events.Select(e => e.ToHtmlSafeRowKeyId()))
+            {
+                <text>window.nuget.configureExpanderHeading("@containerId");</text>
+            }
+        }
+    </script>
+}

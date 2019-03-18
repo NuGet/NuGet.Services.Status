@@ -1,16 +1,10 @@
 # NuGet.Status
 
-This repo contains the website running NuGet's [public status page](https://status.nuget.org). The status page is in an early preview.
+This repo contains the website running NuGet's [public status page](https://status.nuget.org).
 
 ## Contributing
 
-Pull requests should be based on the `dev` branch. Once a release is planned, the `dev` branch or specific, cherry-picked changes can flow to `master`.
-
-To deploy, merge into the `release-{environment}` branch.
-
-* `release-dev` deploys to [http://nuget-dev-0-status.azurewebsites.net](http://nuget-dev-0-status.azurewebsites.net)
-* `release-int` deploys to [http://nuget-int-0-status.azurewebsites.net](http://nuget-int-0-status.azurewebsites.net)
-* `release-prod` deploys to [https://status.nuget.org](https://status.nuget.org) ([http://nuget-prod-status.trafficmanager.net](http://nuget-prod-status.trafficmanager.net))
+Pull requests should be based on the `dev` branch. Once a release is planned, the `dev` branch or specific, cherry-picked changes, can flow to `master`.
 
 ## Feedback
 

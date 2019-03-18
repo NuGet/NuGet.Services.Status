@@ -43,9 +43,8 @@ namespace NuGet.Status.Configuration
                 var storeName = _configurationDictionary[StoreNameKey];
                 var validateCertificate = _configurationDictionary[ValidateCertificateKey];
 
-                int refreshIntervalSec;
                 if (!_configurationDictionary.ContainsKey(CacheRefreshIntervalKey) ||
-                    !int.TryParse(_configurationDictionary[CacheRefreshIntervalKey], out refreshIntervalSec))
+                    !int.TryParse(_configurationDictionary[CacheRefreshIntervalKey], out int refreshIntervalSec))
                 {
                     refreshIntervalSec = CachingSecretReader.DefaultRefreshIntervalSec;
                 }

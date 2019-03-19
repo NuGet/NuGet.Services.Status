@@ -335,7 +335,7 @@
     <Compile Include="Models\StatusEventChange.cs" />
     <Compile Include="Models\EditStatusEventMessage.cs" />
     <Compile Include="Models\CreateStatusEvent.cs" />
-    <Compile Include="NuGetGallery\src\NuGetGallery\Constants.cs" />
+    <Compile Include="NuGetGallery\src\NuGetGallery\GalleryConstants.cs" />
     <Compile Include="NuGetGallery\src\NuGetGallery\Extensions\DateTimeExtensions.cs" />
     <Compile Include="NuGetGallery\src\NuGetGallery\Helpers\StringExtensions.cs" />
     <Compile Include="Extensions\ComponentExtensions.cs" />

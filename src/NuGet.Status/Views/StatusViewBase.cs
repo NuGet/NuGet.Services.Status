@@ -10,6 +10,8 @@ namespace NuGet.Status.Views
 
         public string Brand => "NuGet";
 
+        public bool BlockSearchEngineIndexing => false;
+
         public string WarningBanner => "";
 
         public string RedesignBanner => "";

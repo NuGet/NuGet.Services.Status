@@ -4,13 +4,14 @@ param (
     [string]$Configuration = 'debug',
     [int]$BuildNumber,
     [switch]$SkipRestore,
+    [switch]$SkipSubModules,
     [switch]$CleanCache,
     [string]$SimpleVersion = '1.0.0',
     [string]$SemanticVersion = '1.0.0-zlocal',
     [string]$PackageSuffix,
     [string]$Branch,
     [string]$CommitSHA,
-    [string]$BuildBranch = '8209830d5f760e344de359a3bcf684bf36e0a8d5'
+    [string]$BuildBranch = 'd6dc2f9ce051dcc5632becd12f71a4d5345aabc8'
 )
 
 Set-StrictMode -Version 1.0
@@ -54,10 +55,14 @@ Trace-Log "Build #$BuildNumber started at $startTime"
 
 $BuildErrors = @()
 
+Invoke-BuildStep 'Reset all submodules' { Reset-Submodules } `
+    -skip:($SkipSubModules) `
+    -ev +BuildErrors
+
 Invoke-BuildStep "Update NuGetGallery submodule" {
         Invoke-Git 'submodule', 'update', '--init', '--', 'src/NuGet.Status/NuGetGallery'
     } `
-    -skip:($SkipSubModules -or $Fast) `
+    -skip:($SkipSubModules) `
     -ev +BuildErrors
     
 Invoke-BuildStep 'Getting private build tools' { Install-PrivateBuildTools } `

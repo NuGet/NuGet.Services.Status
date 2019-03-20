@@ -3,16 +3,16 @@
 
 using System;
 using System.Configuration;
-using System.IO;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Web.Helpers;
 using System.Web.Hosting;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using Microsoft.ApplicationInsights.Extensibility;
-using Newtonsoft.Json.Linq;
 using NuGet.Services.Configuration;
 using NuGet.Status.Configuration;
 using NuGet.Status.Helpers;
@@ -22,7 +22,18 @@ namespace NuGet.Status
 {
     public class MvcApplication : System.Web.HttpApplication
     {
-        public static IConfigurationProvider ConfigurationProvider;
+        private static TimeSpan ConfigurationRefreshPeriod = new TimeSpan(1, 0, 0, 0);
+        private static readonly IConfigurationFactory _configurationFactory;
+
+        public static StatusConfiguration StatusConfiguration { get; private set; }
+
+        /// <remarks>
+        /// The IDA configuration is only refreshed once.
+        /// It is only used on application startup in <see cref="Startup.Init"/>.
+        /// </remarks>
+        private static Lazy<IdaConfiguration> _idaConfiguration = new Lazy<IdaConfiguration>(
+            () => _configurationFactory.Get<IdaConfiguration>().Result);
+        public static IdaConfiguration IdaConfiguration => _idaConfiguration.Value;
 
         static MvcApplication()
         {
@@ -31,7 +42,10 @@ namespace NuGet.Status
             var secretReader = secretReaderFactory.CreateSecretReader();
             var secretInjector = secretReaderFactory.CreateSecretInjector(secretReader);
 
-            ConfigurationProvider = new SecretConfigurationProvider(secretInjector, configurationDictionary);
+            var configurationProvider = new AppSettingsConfigurationProvider(secretInjector);
+            _configurationFactory = new ConfigurationFactory(configurationProvider);
+
+            StatusConfiguration = _configurationFactory.Get<StatusConfiguration>().Result;
         }
 
         protected void Application_Start()
@@ -46,23 +60,16 @@ namespace NuGet.Status
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             AntiForgeryConfig.UniqueClaimTypeIdentifier = ClaimTypes.NameIdentifier;
 
-#pragma warning disable CS0618 // Type or member is obsolete
-            UrlExtensions.BaseUrl = ConfigurationProvider
-                .GetOrDefaultSync("NuGetBaseUrl", "https://www.nuget.org/")
-                .TrimEnd('/');
+            UrlExtensions.BaseUrl = StatusConfiguration.NuGetBaseUrl.TrimEnd('/');
 
-            var instrumentationKey = ConfigurationProvider
-                .GetOrDefaultSync("ApplicationInsightsKey", string.Empty);
+            var instrumentationKey = StatusConfiguration.ApplicationInsightsKey;
             if (!string.IsNullOrWhiteSpace(instrumentationKey))
             {
                 TelemetryConfiguration.Active.InstrumentationKey = instrumentationKey;
             }
-#pragma warning restore CS0618 // Type or member is obsolete
 
-            HostingEnvironment.QueueBackgroundWorkItem(token =>
-            {
-                return ServiceStatusHelper.ReloadServiceStatusForever(token);
-            });
+            HostingEnvironment.QueueBackgroundWorkItem(ServiceStatusHelper.ReloadServiceStatusForever);
+            HostingEnvironment.QueueBackgroundWorkItem(RefreshConfigurationForever);
         }
 
         protected void Application_Error(object sender, EventArgs e)
@@ -71,6 +78,13 @@ namespace NuGet.Status
                 nameof(Application_Error), 
                 "Exception thrown by request!", 
                 Server.GetLastError());
+        }
+
+        private async Task RefreshConfigurationForever(CancellationToken token)
+        {
+            await Task.Delay(ConfigurationRefreshPeriod);
+            StatusConfiguration = await _configurationFactory.Get<StatusConfiguration>();
+            await RefreshConfigurationForever(token);
         }
     }
 }

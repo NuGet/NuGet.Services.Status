@@ -118,14 +118,14 @@ namespace NuGet.Status.Controllers
         {
             try
             {
-                var table = await storageService.GetCloudTableAsync();
+                var table = storageService.GetCloudTable();
                 var operation = TableOperation.Insert(entity);
                 await table.ExecuteAsync(operation);
                 return true;
             }
             catch (Exception e)
             {
-                QuietLog.Log($"{nameof(AdminController)}.{nameof(InsertEntityToStorage)}", $"Failed to insert entity to table with connection string key {storageService.ConnectionStringKey}!", e);
+                QuietLog.Log($"{nameof(AdminController)}.{nameof(InsertEntityToStorage)}", $"Failed to insert entity to table in {storageService.Name} storage!", e);
             }
 
             return false;

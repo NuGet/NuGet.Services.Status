@@ -84,21 +84,19 @@ namespace NuGet.Status
             ServicePointManager.SecurityProtocol &= ~SecurityProtocolType.Ssl3;
             ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
 
-            var configurationProvider = MvcApplication.ConfigurationProvider;
-
-#pragma warning disable CS0618 // Type or member is obsolete
-            _postStatusEnabled = configurationProvider.GetOrDefaultSync<bool>("Ida:AdminEnabled");
-#pragma warning restore CS0618 // Type or member is obsolete
+            _postStatusEnabled = MvcApplication.StatusConfiguration.AdminEnabled;
 
             if (_postStatusEnabled)
             {
-                _clientId = configurationProvider.GetOrThrowSync<string>("Ida:ClientId");
+                var idaConfiguration = MvcApplication.IdaConfiguration;
 
-                _aadInstance = configurationProvider.GetOrThrowSync<string>("Ida:AADInstance");
-                _tenant = configurationProvider.GetOrThrowSync<string>("Ida:Tenant");
+                _clientId = idaConfiguration.ClientId;
+
+                _aadInstance = idaConfiguration.AADInstance;
+                _tenant = idaConfiguration.Tenant;
                 _authority = new Uri(new Uri(_aadInstance), _tenant).ToString();
 
-                _rootUri = configurationProvider.GetOrThrowSync<string>("Ida:RootUri");
+                _rootUri = idaConfiguration.RootUri;
                 _redirectUri = new Uri(new Uri(_rootUri), "admin").ToString();
             }
         }

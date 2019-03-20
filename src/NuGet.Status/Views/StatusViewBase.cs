@@ -1,4 +1,6 @@
-﻿using NuGet.Services.Configuration;
+﻿// Copyright (c) .NET Foundation. All rights reserved. 
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information. 
+
 using System.Collections.Generic;
 using System.Web.Mvc;
 
@@ -6,8 +8,6 @@ namespace NuGet.Status.Views
 {
     public class CurrentConfig
     {
-        public static IConfigurationProvider configurationProvider = MvcApplication.ConfigurationProvider;
-
         public string Brand => "NuGet";
 
         public bool BlockSearchEngineIndexing => false;
@@ -18,19 +18,17 @@ namespace NuGet.Status.Views
 
         public CookieConsentMessage CookieConsentMessage => null;
 
-#pragma warning disable CS0618 // Type or member is obsolete
-        public string ExternalBrandingMessage => configurationProvider.GetOrDefaultSync<string>("ExternalBrandingMessage");
+        public string ExternalBrandingMessage => MvcApplication.StatusConfiguration.ExternalBrandingMessage;
 
-        public string ExternalBrandingUrl => configurationProvider.GetOrDefaultSync<string>("ExternalBrandingUrl");
+        public string ExternalBrandingUrl => MvcApplication.StatusConfiguration.ExternalBrandingUrl;
 
-        public string ExternalAboutUrl => configurationProvider.GetOrDefaultSync<string>("ExternalAboutUrl");
+        public string ExternalAboutUrl => MvcApplication.StatusConfiguration.ExternalAboutUrl;
 
-        public string ExternalPrivacyPolicyUrl => configurationProvider.GetOrDefaultSync<string>("ExternalPrivacyPolicyUrl");
+        public string ExternalPrivacyPolicyUrl => MvcApplication.StatusConfiguration.ExternalPrivacyPolicyUrl;
 
-        public string ExternalTermsOfUseUrl => configurationProvider.GetOrDefaultSync<string>("ExternalTermsOfUseUrl");
+        public string ExternalTermsOfUseUrl => MvcApplication.StatusConfiguration.ExternalTermsOfUseUrl;
 
-        public string TrademarksUrl => configurationProvider.GetOrDefaultSync<string>("TrademarksUrl");
-#pragma warning restore CS0618 // Type or member is obsolete
+        public string TrademarksUrl => MvcApplication.StatusConfiguration.TrademarksUrl;
 
         public bool DeprecateNuGetPasswordLogins => false;
 

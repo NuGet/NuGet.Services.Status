@@ -38,15 +38,10 @@ namespace NuGet.Status
             {
                 app.SetDefaultSignInAsAuthenticationType(CookieAuthenticationDefaults.AuthenticationType);
 
-                // Ignore secure cookie for local testing.
-                var cookieSecure = _redirectUri.StartsWith("http://localhost")
-                    ? CookieSecureOption.Never
-                    : CookieSecureOption.Always;
-
                 var options = new CookieAuthenticationOptions
                 {
                     CookieHttpOnly = true,
-                    CookieSecure = cookieSecure,
+                    CookieSecure = CookieSecureOption.Always,
                     ExpireTimeSpan = TimeSpan.FromMinutes(10),
                     SlidingExpiration = true
                 };

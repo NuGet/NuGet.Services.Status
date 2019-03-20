@@ -494,7 +494,7 @@
         <WebProjectProperties>
           <UseIIS>True</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>53485</DevelopmentServerPort>
+          <DevelopmentServerPort>443</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>https://localhost:443/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>

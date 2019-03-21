@@ -42,10 +42,14 @@ namespace NuGet.Status.Configuration
                 var storeLocation = _configurationDictionary[StoreLocationKey];
                 var storeName = _configurationDictionary[StoreNameKey];
                 var validateCertificate = _configurationDictionary[ValidateCertificateKey];
+                var certificate = CertificateUtility.FindCertificateByThumbprint(
+                    (StoreName)Enum.Parse(typeof(StoreName), storeName),
+                    (StoreLocation)Enum.Parse(typeof(StoreLocation), storeLocation), 
+                    certificateThumbprint,
+                    bool.Parse(validateCertificate));
 
-                int refreshIntervalSec;
                 if (!_configurationDictionary.ContainsKey(CacheRefreshIntervalKey) ||
-                    !int.TryParse(_configurationDictionary[CacheRefreshIntervalKey], out refreshIntervalSec))
+                    !int.TryParse(_configurationDictionary[CacheRefreshIntervalKey], out int refreshIntervalSec))
                 {
                     refreshIntervalSec = CachingSecretReader.DefaultRefreshIntervalSec;
                 }
@@ -54,10 +58,7 @@ namespace NuGet.Status.Configuration
                     new KeyVaultConfiguration(
                         vaultName,
                         clientId,
-                        certificateThumbprint,
-                        (StoreName)Enum.Parse(typeof(StoreName), storeName),
-                        (StoreLocation)Enum.Parse(typeof(StoreLocation), storeLocation),
-                        bool.Parse(validateCertificate)));
+                        certificate));
 
                 secretReader = new CachingSecretReader(secretReader, refreshIntervalSec);
             }

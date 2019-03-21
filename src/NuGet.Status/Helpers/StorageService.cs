@@ -4,67 +4,49 @@
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.Table;
-using System.Threading.Tasks;
+using System;
 
 namespace NuGet.Status.Helpers
 {
     public class StorageService
     {
-        private const string TableNameKey = "Storage:TableName";
-        private const string ContainerNameKey = "Storage:ContainerName";
-        private const string BlobNameKey = "Storage:BlobName";
+        private readonly Func<string> _getConnectionString;
 
-        public string ConnectionStringKey { get; }
+        public string Name { get; }
 
-        public StorageService(string connectionStringKey)
+        public StorageService(string name, Func<string> getConnectionString)
         {
-            ConnectionStringKey = connectionStringKey;
+            Name = name;
+            _getConnectionString = getConnectionString;
         }
 
-        public async Task<CloudBlockBlob> GetCloudBlockBlobAsync()
+        public CloudBlockBlob GetCloudBlockBlob()
         {
-            var blobName = await MvcApplication
-                .ConfigurationProvider
-                .GetOrThrow<string>(BlobNameKey);
-
-            var container = await GetCloudBlobContainerAsync();
-
-            return container.GetBlockBlobReference(blobName);
+            var container = GetCloudBlobContainer();
+            return container.GetBlockBlobReference(MvcApplication.StatusConfiguration.BlobName);
         }
 
-        public async Task<CloudBlobContainer> GetCloudBlobContainerAsync()
+        public CloudBlobContainer GetCloudBlobContainer()
         {
-            var containerName = await MvcApplication
-                .ConfigurationProvider
-                .GetOrThrow<string>(ContainerNameKey);
-
-            var storageAccount = await GetCloudStorageAccountAsync();
+            var storageAccount = GetCloudStorageAccount();
 
             return storageAccount
                 .CreateCloudBlobClient()
-                .GetContainerReference(containerName);
+                .GetContainerReference(MvcApplication.StatusConfiguration.ContainerName);
         }
 
-        public async Task<CloudTable> GetCloudTableAsync()
+        public CloudTable GetCloudTable()
         {
-            var tableName = await MvcApplication
-                .ConfigurationProvider
-                .GetOrThrow<string>(TableNameKey);
-
-            var storageAccount = await GetCloudStorageAccountAsync();
+            var storageAccount = GetCloudStorageAccount();
 
             return storageAccount
                 .CreateCloudTableClient()
-                .GetTableReference(tableName);
+                .GetTableReference(MvcApplication.StatusConfiguration.TableName);
         }
 
-        public async Task<CloudStorageAccount> GetCloudStorageAccountAsync()
+        public CloudStorageAccount GetCloudStorageAccount()
         {
-            var connectionString = await MvcApplication
-                .ConfigurationProvider
-                .GetOrThrow<string>(ConnectionStringKey);
-
-            return CloudStorageAccount.Parse(connectionString);
+            return CloudStorageAccount.Parse(_getConnectionString());
         }
     }
 }

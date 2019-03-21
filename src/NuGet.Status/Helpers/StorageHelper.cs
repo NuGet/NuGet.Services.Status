@@ -5,10 +5,11 @@ namespace NuGet.Status.Helpers
 {
     public static class StorageHelper
     {
-        private const string PrimaryConnectionStringKey = "Storage:ConnectionString";
-        private const string SecondaryConnectionStringKey = "Storage:SecondaryConnectionString";
-
-        public static StorageService PrimaryStorage => new StorageService(PrimaryConnectionStringKey);
-        public static StorageService SecondaryStorage => new StorageService(SecondaryConnectionStringKey);
+        public static StorageService PrimaryStorage => new StorageService(
+            "primary",
+            () => MvcApplication.StatusConfiguration.ConnectionString);
+        public static StorageService SecondaryStorage => new StorageService(
+            "secondary",
+            () => MvcApplication.StatusConfiguration.SecondaryConnectionString);
     }
 }

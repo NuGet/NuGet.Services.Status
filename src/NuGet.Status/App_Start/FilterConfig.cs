@@ -9,9 +9,7 @@ namespace NuGet.Status
     {
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
-#if !DEBUG
             filters.Add(new RequireHttpsAttribute());
-#endif
         }
     }
 }

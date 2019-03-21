@@ -53,7 +53,7 @@ namespace NuGet.Status.Helpers
 
         private static async Task<CachedServiceStatus> GetServiceStatusAsync(CancellationToken token)
         {
-            var blob = await StorageHelper.PrimaryStorage.GetCloudBlockBlobAsync();
+            var blob = StorageHelper.PrimaryStorage.GetCloudBlockBlob();
             var json = await blob.DownloadTextAsync(token);
             return new CachedServiceStatus(json);
         }

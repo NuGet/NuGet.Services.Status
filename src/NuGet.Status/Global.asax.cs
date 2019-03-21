@@ -3,15 +3,16 @@
 
 using System;
 using System.Configuration;
-using System.IO;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Web.Helpers;
 using System.Web.Hosting;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
-using Newtonsoft.Json.Linq;
+using Microsoft.ApplicationInsights.Extensibility;
 using NuGet.Services.Configuration;
 using NuGet.Status.Configuration;
 using NuGet.Status.Helpers;
@@ -21,26 +22,30 @@ namespace NuGet.Status
 {
     public class MvcApplication : System.Web.HttpApplication
     {
-        public static IConfigurationProvider ConfigurationProvider;
+        private static TimeSpan ConfigurationRefreshPeriod = new TimeSpan(days: 1, hours: 0, minutes: 0, seconds: 0);
+        private static readonly IConfigurationFactory _configurationFactory;
+
+        public static StatusConfiguration StatusConfiguration { get; private set; }
+
+        /// <remarks>
+        /// The IDA configuration is only refreshed once.
+        /// It is only used on application startup in <see cref="Startup.Init"/>.
+        /// </remarks>
+        private static Lazy<IdaConfiguration> _idaConfiguration = new Lazy<IdaConfiguration>(
+            () => _configurationFactory.Get<IdaConfiguration>().Result);
+        public static IdaConfiguration IdaConfiguration => _idaConfiguration.Value;
 
         static MvcApplication()
         {
             var configurationDictionary = ConfigurationManager.AppSettings.AllKeys.ToDictionary(key => key, key => ConfigurationManager.AppSettings[key]);
-
-            var filename = configurationDictionary["Config:FileName"];
-            var configPath = HostingEnvironment.MapPath($@"~/App_Data/{filename}.json");
-            var configJson = File.ReadAllText(configPath);
-            var config = JObject.Parse(configJson);
-            foreach (var property in config.Properties())
-            {
-                configurationDictionary[property.Name] = property.Value.ToString();
-            }
-
             var secretReaderFactory = new SecretReaderFactory(configurationDictionary);
             var secretReader = secretReaderFactory.CreateSecretReader();
             var secretInjector = secretReaderFactory.CreateSecretInjector(secretReader);
 
-            ConfigurationProvider = new SecretConfigurationProvider(secretInjector, configurationDictionary);
+            var configurationProvider = new AppSettingsConfigurationProvider(secretInjector);
+            _configurationFactory = new ConfigurationFactory(configurationProvider);
+
+            StatusConfiguration = _configurationFactory.Get<StatusConfiguration>().Result;
         }
 
         protected void Application_Start()
@@ -55,16 +60,16 @@ namespace NuGet.Status
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             AntiForgeryConfig.UniqueClaimTypeIdentifier = ClaimTypes.NameIdentifier;
 
-#pragma warning disable CS0618 // Type or member is obsolete
-            UrlExtensions.BaseUrl = ConfigurationProvider
-                .GetOrDefaultSync("NuGetBaseUrl", "https://www.nuget.org/")
-                .TrimEnd('/');
-#pragma warning restore CS0618 // Type or member is obsolete
+            UrlExtensions.BaseUrl = StatusConfiguration.NuGetBaseUrl.TrimEnd('/');
 
-            HostingEnvironment.QueueBackgroundWorkItem(token =>
+            var instrumentationKey = StatusConfiguration.ApplicationInsightsKey;
+            if (!string.IsNullOrWhiteSpace(instrumentationKey))
             {
-                return ServiceStatusHelper.ReloadServiceStatusForever(token);
-            });
+                TelemetryConfiguration.Active.InstrumentationKey = instrumentationKey;
+            }
+
+            HostingEnvironment.QueueBackgroundWorkItem(ServiceStatusHelper.ReloadServiceStatusForever);
+            HostingEnvironment.QueueBackgroundWorkItem(RefreshConfigurationForever);
         }
 
         protected void Application_Error(object sender, EventArgs e)
@@ -75,11 +80,11 @@ namespace NuGet.Status
                 Server.GetLastError());
         }
 
-        private static JObject GetConfigFile(string filename)
+        private async Task RefreshConfigurationForever(CancellationToken token)
         {
-            var configPath = HostingEnvironment.MapPath($@"~/App_Data/{filename}.json");
-            var configJson = File.ReadAllText(configPath);
-            return JObject.Parse(configJson);
+            await Task.Delay(ConfigurationRefreshPeriod);
+            StatusConfiguration = await _configurationFactory.Get<StatusConfiguration>();
+            await RefreshConfigurationForever(token);
         }
     }
 }

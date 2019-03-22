@@ -6,7 +6,7 @@ This repo contains the website running NuGet's [public status page](https://stat
 
 Set up your DEV environment:
 
-```scripts\Setup-DevEnvironment.ps1```
+```scripts\Setup-LocalEnvironment.ps1```
 
 Pull requests should be based on the `dev` branch. Once a release is planned, the `dev` branch or specific, cherry-picked changes, can flow to `master`.
 

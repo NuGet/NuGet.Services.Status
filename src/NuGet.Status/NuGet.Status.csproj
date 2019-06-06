@@ -468,9 +468,9 @@
   </PropertyGroup>
   <Import Project="$(SignPath)\sign.targets" Condition="Exists('$(SignPath)\sign.targets')" />
   <ItemGroup>
-    <ThirdPartyBinaries Include="Antlr3.Runtime.dll" />
-    <ThirdPartyBinaries Include="Markdig.dll" />
-    <ThirdPartyBinaries Include="Newtonsoft.Json.dll" />
+    <ThirdPartyBinaries Include="Antlr3.Runtime.dll" Visible="false" />
+    <ThirdPartyBinaries Include="Markdig.dll" Visible="false" />
+    <ThirdPartyBinaries Include="Newtonsoft.Json.dll" Visible="false" />
   </ItemGroup>
   <Import Project="$(SignPath)\sign.microbuild.targets" Condition="Exists('$(SignPath)\sign.microbuild.targets')" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />

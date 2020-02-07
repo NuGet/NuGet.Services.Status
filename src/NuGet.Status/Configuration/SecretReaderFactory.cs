@@ -10,6 +10,7 @@ namespace NuGet.Status.Configuration
 {
     public class SecretReaderFactory : ISecretReaderFactory
     {
+        public const string UseManagedIdentityKey = "KeyVault:UseManagedIdentity";
         public const string VaultNameKey = "KeyVault:VaultName";
         public const string ClientIdKey = "KeyVault:ClientId";
         public const string CertificateThumbprintKey = "KeyVault:CertificateThumbprint";
@@ -27,39 +28,45 @@ namespace NuGet.Status.Configuration
 
         public ISecretReader CreateSecretReader()
         {
-            var vaultName = _configurationDictionary[VaultNameKey];
             ISecretReader secretReader;
 
-            // Is key vault configured?
-            if (string.IsNullOrEmpty(vaultName))
+            // Is KeyVault configured?
+            if (!_configurationDictionary.TryGetValue(VaultNameKey, out var vaultName)
+                || string.IsNullOrEmpty(vaultName))
             {
                 secretReader = new EmptySecretReader();
             }
             else
             {
-                var clientId = _configurationDictionary[ClientIdKey];
-                var certificateThumbprint = _configurationDictionary[CertificateThumbprintKey];
-                var storeLocation = _configurationDictionary[StoreLocationKey];
-                var storeName = _configurationDictionary[StoreNameKey];
-                var validateCertificate = _configurationDictionary[ValidateCertificateKey];
-                var certificate = CertificateUtility.FindCertificateByThumbprint(
-                    (StoreName)Enum.Parse(typeof(StoreName), storeName),
-                    (StoreLocation)Enum.Parse(typeof(StoreLocation), storeLocation), 
-                    certificateThumbprint,
-                    bool.Parse(validateCertificate));
+                KeyVaultConfiguration keyVaultConfiguration;
+                if (_configurationDictionary.TryGetValue(UseManagedIdentityKey, out var useManagedIdentityStr)
+                    && bool.TryParse(useManagedIdentityStr, out var useManagedIdentity)
+                    && useManagedIdentity)
+                {
+                    keyVaultConfiguration = new KeyVaultConfiguration(vaultName);
+                }
+                else
+                {
+                    var clientId = _configurationDictionary[ClientIdKey];
+                    var certificateThumbprint = _configurationDictionary[CertificateThumbprintKey];
+                    var storeLocation = _configurationDictionary[StoreLocationKey];
+                    var storeName = _configurationDictionary[StoreNameKey];
+                    var validateCertificate = _configurationDictionary[ValidateCertificateKey];
+                    var certificate = CertificateUtility.FindCertificateByThumbprint(
+                        (StoreName)Enum.Parse(typeof(StoreName), storeName),
+                        (StoreLocation)Enum.Parse(typeof(StoreLocation), storeLocation),
+                        certificateThumbprint,
+                        bool.Parse(validateCertificate));
+                    keyVaultConfiguration = new KeyVaultConfiguration(vaultName, clientId, certificate);
+                }
 
-                if (!_configurationDictionary.ContainsKey(CacheRefreshIntervalKey) ||
-                    !int.TryParse(_configurationDictionary[CacheRefreshIntervalKey], out int refreshIntervalSec))
+                if (!_configurationDictionary.TryGetValue(CacheRefreshIntervalKey, out var cacheRefresh)
+                    || !int.TryParse(cacheRefresh, out int refreshIntervalSec))
                 {
                     refreshIntervalSec = CachingSecretReader.DefaultRefreshIntervalSec;
                 }
 
-                secretReader = new KeyVaultReader(
-                    new KeyVaultConfiguration(
-                        vaultName,
-                        clientId,
-                        certificate));
-
+                secretReader = new KeyVaultReader(keyVaultConfiguration);
                 secretReader = new CachingSecretReader(secretReader, refreshIntervalSec);
             }
 

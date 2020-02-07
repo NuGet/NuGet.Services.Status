@@ -118,5 +118,10 @@ namespace NuGet.Status.Helpers
         {
             return BaseUrl + "/account/Organizations";
         }
+
+        public static string Current(this UrlHelper url)
+        {
+            return url.RequestContext.HttpContext.Request.RawUrl;
+        }
     }
 }

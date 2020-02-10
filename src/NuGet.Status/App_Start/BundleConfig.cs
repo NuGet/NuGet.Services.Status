@@ -14,7 +14,7 @@ namespace NuGet.Status
 
             bundles.Add(new ScriptBundle("~/Scripts/gallery/site.min.js")
                 .Include(
-                    "~/Scripts/gallery/jquery-1.12.4.js",
+                    "~/Scripts/gallery/jquery-3.4.1.js",
                     "~/Scripts/gallery/jquery.validate-1.16.0.js",
                     "~/Scripts/gallery/jquery.validate.unobtrusive-3.2.6.js",
                     "~/Scripts/gallery/knockout-3.4.2.js",

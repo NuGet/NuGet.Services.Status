@@ -77,9 +77,32 @@
     <text>onerror="this.src='@url'; this.onerror = null;"</text>
 }
 
-@helper GravatarImage(string email, string username, int size)
+@helper GravatarImage(UrlHelper url, string email, string username, int size)
 {
     // Gravatars are not displayed on the status page.
+}
+
+@helper UsabillaButton(UrlHelper url)
+{
+    // The Usabilla button is not displayed on the status page.
+}
+
+@helper UsabillaScript()
+{
+    // The Usabilla button is not displayed on the status page.
+}
+
+@helper PostLink(
+    System.Web.Mvc.WebViewPage page,
+    string formId,
+    string linkText,
+    string actionName,
+    string controllerName,
+    string role,
+    string area = "",
+    Dictionary<string, string> formValues = null)
+{
+    // There is no user authentication on the status page so this is not needed.
 }
 
 @helper ErrorPage(UrlHelper url, System.Web.Mvc.HtmlHelper html, string errorNumber, string errorName, Func<MvcHtmlString, HelperResult> errorTextMain, Func<MvcHtmlString, HelperResult> errorTextSub = null)

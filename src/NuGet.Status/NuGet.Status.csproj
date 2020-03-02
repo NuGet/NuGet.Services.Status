@@ -211,6 +211,7 @@
     <ThirdPartyBinaries Include="Antlr3.Runtime.dll" Visible="false" />
     <ThirdPartyBinaries Include="Markdig.dll" Visible="false" />
     <ThirdPartyBinaries Include="Newtonsoft.Json.dll" Visible="false" />
+    <ThirdPartyBinaries Include="Owin.dll" Visible="false" />
   </ItemGroup>
   <Import Project="$(SignPath)\sign.microbuild.targets" Condition="Exists('$(SignPath)\sign.microbuild.targets')" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />

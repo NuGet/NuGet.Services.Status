@@ -44,8 +44,7 @@ namespace NuGet.Status
                     CookieHttpOnly = true,
                     CookieSecure = CookieSecureOption.Always,
                     ExpireTimeSpan = TimeSpan.FromMinutes(10),
-                    SlidingExpiration = true,
-                    CookieManager = new SystemWebChunkingCookieManager()
+                    SlidingExpiration = true
                 };
 
                 app.UseCookieAuthentication(options);
@@ -57,7 +56,7 @@ namespace NuGet.Status
                         Authority = _authority,
                         RedirectUri = _redirectUri,
                         PostLogoutRedirectUri = _rootUri,
-                        TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                        TokenValidationParameters = new System.IdentityModel.Tokens.TokenValidationParameters
                         {
                             ValidateIssuer = false,
                             RoleClaimType = "roles"

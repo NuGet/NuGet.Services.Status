@@ -44,7 +44,8 @@ namespace NuGet.Status
                     CookieHttpOnly = true,
                     CookieSecure = CookieSecureOption.Always,
                     ExpireTimeSpan = TimeSpan.FromMinutes(10),
-                    SlidingExpiration = true
+                    SlidingExpiration = true,
+                    CookieManager = new SystemWebChunkingCookieManager()
                 };
 
                 app.UseCookieAuthentication(options);

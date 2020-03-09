@@ -5,6 +5,7 @@ using System;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Owin;
+using Microsoft.Owin.Host.SystemWeb;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OpenIdConnect;
@@ -43,7 +44,8 @@ namespace NuGet.Status
                     CookieHttpOnly = true,
                     CookieSecure = CookieSecureOption.Always,
                     ExpireTimeSpan = TimeSpan.FromMinutes(10),
-                    SlidingExpiration = true
+                    SlidingExpiration = true,
+                    CookieManager = new SystemWebChunkingCookieManager()
                 };
 
                 app.UseCookieAuthentication(options);

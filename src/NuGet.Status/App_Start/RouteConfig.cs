@@ -25,7 +25,7 @@ namespace NuGet.Status
                 namespaces: new string[] { "NuGet.Status.Controllers" },
                 url: "{controller}/{action}",
                 defaults: new { controller = "Home", action = "Index" },
-                constraints: new { controller = "Home|Admin|Errors" });
+                constraints: new { controller = "Home|Admin|Errors|Authorized" });
         }
     }
 }

@@ -64,6 +64,7 @@
     <Compile Include="Configuration\NuGetGalleryVirtualPathProvider.cs" />
     <Compile Include="Configuration\SecretReaderFactory.cs" />
     <Compile Include="Configuration\StatusConfiguration.cs" />
+    <Compile Include="Controllers\AuthorizedController.cs" />
     <Compile Include="Controllers\AppController.cs" />
     <Compile Include="Controllers\ErrorsController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
@@ -134,12 +135,12 @@
     <Content Include="Service References\Application Insights\ConnectedService.json" />
     <Content Include="Views\Home\_LatestStatusUpdate.cshtml" />
     <Content Include="Views\Home\_CdnStatus.cshtml" />
-    <Content Include="Views\Admin\Index.cshtml" />
-    <Content Include="Views\Admin\_Create.cshtml" />
-    <Content Include="Views\Admin\_Edit.cshtml" />
-    <Content Include="Views\Admin\_AddStatusEventMessage.cshtml" />
-    <Content Include="Views\Admin\_EditStatusEventMessage.cshtml" />
-    <Content Include="Views\Admin\_EditStatusEvent.cshtml" />
+    <Content Include="Views\Authorized\_AddStatusEventMessage.cshtml" />
+    <Content Include="Views\Authorized\_Create.cshtml" />
+    <Content Include="Views\Authorized\_Edit.cshtml" />
+    <Content Include="Views\Authorized\_EditStatusEvent.cshtml" />
+    <Content Include="Views\Authorized\_EditStatusEventMessage.cshtml" />
+    <Content Include="Views\Authorized\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Data\**" />
@@ -177,16 +178,16 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Owin.Host.SystemWeb">
-      <Version>3.1.0</Version>
+      <Version>4.1.1</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Owin.Security.Cookies">
-      <Version>3.0.1</Version>
+      <Version>4.1.1</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Owin.Security.OpenIdConnect">
-      <Version>3.0.1</Version>
+      <Version>4.1.1</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Owin.StaticFiles">
-      <Version>3.0.1</Version>
+      <Version>4.1.1</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.WindowsAzure.ConfigurationManager">
       <Version>3.1.0</Version>

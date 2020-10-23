@@ -57,13 +57,20 @@ namespace NuGet.Status
                         Authority = _authority,
                         RedirectUri = _redirectUri,
                         PostLogoutRedirectUri = _rootUri,
-                        TokenValidationParameters = new System.IdentityModel.Tokens.TokenValidationParameters
+                        CookieManager = new SystemWebChunkingCookieManager(),
+                        TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
                         {
                             ValidateIssuer = false,
                             RoleClaimType = "roles"
                         },
                         Notifications = new OpenIdConnectAuthenticationNotifications
                         {
+                            RedirectToIdentityProvider = notification =>
+                            {
+                                notification.Options.RedirectUri = new Uri(new Uri(_rootUri), "Authorized").ToString();
+                                notification.ProtocolMessage.Prompt = "select_account"; // force entering of credential
+                                return Task.FromResult(0);
+                            },
                             AuthenticationFailed = context =>
                             {
                                 context.HandleResponse();

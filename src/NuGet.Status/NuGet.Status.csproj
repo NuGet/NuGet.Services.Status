@@ -64,7 +64,6 @@
     <Compile Include="Configuration\NuGetGalleryVirtualPathProvider.cs" />
     <Compile Include="Configuration\SecretReaderFactory.cs" />
     <Compile Include="Configuration\StatusConfiguration.cs" />
-    <Compile Include="Controllers\AuthorizedController.cs" />
     <Compile Include="Controllers\AppController.cs" />
     <Compile Include="Controllers\ErrorsController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
@@ -135,12 +134,12 @@
     <Content Include="Service References\Application Insights\ConnectedService.json" />
     <Content Include="Views\Home\_LatestStatusUpdate.cshtml" />
     <Content Include="Views\Home\_CdnStatus.cshtml" />
-    <Content Include="Views\Authorized\_AddStatusEventMessage.cshtml" />
-    <Content Include="Views\Authorized\_Create.cshtml" />
-    <Content Include="Views\Authorized\_Edit.cshtml" />
-    <Content Include="Views\Authorized\_EditStatusEvent.cshtml" />
-    <Content Include="Views\Authorized\_EditStatusEventMessage.cshtml" />
-    <Content Include="Views\Authorized\Index.cshtml" />
+    <Content Include="Views\Admin\Index.cshtml" />
+    <Content Include="Views\Admin\_Create.cshtml" />
+    <Content Include="Views\Admin\_Edit.cshtml" />
+    <Content Include="Views\Admin\_AddStatusEventMessage.cshtml" />
+    <Content Include="Views\Admin\_EditStatusEventMessage.cshtml" />
+    <Content Include="Views\Admin\_EditStatusEvent.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Data\**" />

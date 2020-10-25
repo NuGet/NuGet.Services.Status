@@ -55,7 +55,7 @@ namespace NuGet.Status
                     {
                         ClientId = _clientId,
                         Authority = _authority,
-                        RedirectUri = _redirectUri,
+                        RedirectUri = _rootUri + "/signin-oidc",
                         PostLogoutRedirectUri = _rootUri,
                         CookieManager = new SystemWebChunkingCookieManager(),
                         TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
@@ -67,7 +67,6 @@ namespace NuGet.Status
                         {
                             RedirectToIdentityProvider = notification =>
                             {
-                                notification.Options.RedirectUri = new Uri(new Uri(_rootUri), "Authorized").ToString();
                                 notification.ProtocolMessage.Prompt = "select_account"; // force entering of credential
                                 return Task.FromResult(0);
                             },

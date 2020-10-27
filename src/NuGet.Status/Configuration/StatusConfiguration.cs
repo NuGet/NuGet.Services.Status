@@ -13,6 +13,8 @@ namespace NuGet.Status.Configuration
 
         public string ApplicationInsightsKey { get; set; }
 
+        public string AdminIdentities { get; set; }
+
         [DefaultValue("https://www.nuget.org/")]
         public string NuGetBaseUrl { get; set; }
 

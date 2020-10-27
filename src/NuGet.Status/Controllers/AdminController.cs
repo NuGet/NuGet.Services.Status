@@ -3,93 +3,115 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Microsoft.WindowsAzure.Storage.Table;
 using NuGet.Services.Status.Table.Manual;
+using NuGet.Status.Configuration;
 using NuGet.Status.Helpers;
 using NuGet.Status.Models;
 using NuGet.Status.Utilities;
 
 namespace NuGet.Status.Controllers
 {
-    [Authorize(Roles = "Admins")]
+    [Authorize]
     public class AdminController : AppController
     {
         public const string UpdatedTempDataKey = "Updated";
 
+        private string[] adminIdentities;
+        private string[] AdminIdentities => (adminIdentities = adminIdentities ?? 
+            (MvcApplication.StatusConfiguration.AdminIdentities?.Split(';') ?? null));
+
+        [HttpGet]
         public ActionResult Index()
         {
-            return View(nameof(Index), CachedServiceStatus?.ServiceStatus);
+            return AuthorizedAction(() => 
+                View(nameof(Index), CachedServiceStatus?.ServiceStatus)
+            );
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public Task<ActionResult> CreateNewEvent(CreateStatusEvent model)
         {
-            var entity = new AddStatusEventManualChangeEntity(model.AffectedComponentPath, model.AffectedComponentStatus, model.Message, model.IsActive);
-            return RunUpdateStatusTask(entity);
+            return AuthorizedAction(() =>
+            {
+                var entity = new AddStatusEventManualChangeEntity(model.AffectedComponentPath, model.AffectedComponentStatus, model.Message, model.IsActive);
+                return RunUpdateStatusTask(entity);
+            });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public Task<ActionResult> EditEvent(EditStatusEvent model)
         {
-            var startTime = ParseModelDateTime(model.StartTime);
-
-            ManualStatusChangeEntity entity;
-            if (model.Delete)
+            return AuthorizedAction(() =>
             {
-                entity = new DeleteStatusEventManualChangeEntity(
-                    model.AffectedComponentPath,
-                    startTime);
-            }
-            else
-            {
-                entity = new EditStatusEventManualChangeEntity(
-                    model.AffectedComponentPath,
-                    model.AffectedComponentStatus,
-                    startTime,
-                    model.IsActive);
-            }
+                var startTime = ParseModelDateTime(model.StartTime);
 
-            return RunUpdateStatusTask(entity);
+                ManualStatusChangeEntity entity;
+                if (model.Delete)
+                {
+                    entity = new DeleteStatusEventManualChangeEntity(
+                        model.AffectedComponentPath,
+                        startTime);
+                }
+                else
+                {
+                    entity = new EditStatusEventManualChangeEntity(
+                        model.AffectedComponentPath,
+                        model.AffectedComponentStatus,
+                        startTime,
+                        model.IsActive);
+                }
+
+                return RunUpdateStatusTask(entity);
+            });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public Task<ActionResult> AddMessage(AddStatusEventMessage model)
         {
-            var entity = new AddStatusMessageManualChangeEntity(model.AffectedComponentPath, ParseModelDateTime(model.StartTime), model.Message, !model.ShouldDeactivate);
-            return RunUpdateStatusTask(entity);
+            return AuthorizedAction(() =>
+            {
+                var entity = new AddStatusMessageManualChangeEntity(model.AffectedComponentPath, ParseModelDateTime(model.StartTime), model.Message, !model.ShouldDeactivate);
+                return RunUpdateStatusTask(entity);
+            });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public Task<ActionResult> EditMessage(EditStatusEventMessage model)
         {
-            var startTime = ParseModelDateTime(model.StartTime);
-            var timestamp = ParseModelDateTime(model.Timestamp);
-
-            ManualStatusChangeEntity entity;
-            if (model.Delete)
+            return AuthorizedAction(() =>
             {
-                entity = new DeleteStatusMessageManualChangeEntity(
-                    model.AffectedComponentPath,
-                    startTime,
-                    timestamp);
-            }
-            else
-            {
-                entity = new EditStatusMessageManualChangeEntity(
-                    model.AffectedComponentPath,
-                    startTime,
-                    timestamp,
-                    model.EditMessage);
-            }
+                var startTime = ParseModelDateTime(model.StartTime);
+                var timestamp = ParseModelDateTime(model.Timestamp);
 
-            return RunUpdateStatusTask(entity);
+                ManualStatusChangeEntity entity;
+                if (model.Delete)
+                {
+                    entity = new DeleteStatusMessageManualChangeEntity(
+                        model.AffectedComponentPath,
+                        startTime,
+                        timestamp);
+                }
+                else
+                {
+                    entity = new EditStatusMessageManualChangeEntity(
+                        model.AffectedComponentPath,
+                        startTime,
+                        timestamp,
+                        model.EditMessage);
+                }
+
+                return RunUpdateStatusTask(entity);
+            });
         }
 
         private const string ManuallyUpdatedStatusEvent = "ManuallyUpdatedStatus";
@@ -133,6 +155,33 @@ namespace NuGet.Status.Controllers
         private static DateTime ParseModelDateTime(string dateTime)
         {
             return DateTime.Parse(dateTime).ToUniversalTime();
+        }
+
+        private ActionResult AuthorizedAction(Func<ActionResult> authorizedFunc)
+        {
+            var failure = TestForAuthErrors();
+            return failure == null ? authorizedFunc() : failure;
+        }
+
+        private Task<ActionResult> AuthorizedAction(Func<Task<ActionResult>> authorizedFunc)
+        {
+            var failure = TestForAuthErrors();
+            return failure == null ? authorizedFunc() : Task.FromResult(failure);
+        }
+
+        private ActionResult TestForAuthErrors()
+        {
+            if (AdminIdentities == null)
+            {
+                throw new HttpRequestException("Authorized user configuration failure.");
+            }
+
+            if (!(AdminIdentities.Any(x => x.Equals(HttpContext.User.Identity.Name, StringComparison.OrdinalIgnoreCase))))
+            {
+                return new HttpUnauthorizedResult();
+            }
+
+            return null;
         }
     }
 }

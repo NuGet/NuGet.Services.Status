@@ -21,7 +21,6 @@ namespace NuGet.Status
         private static string _tenant;
         private static string _authority;
         private static string _rootUri;
-        private static string _redirectUri;
         private static bool _postStatusEnabled;
 
         public void Configuration(IAppBuilder app)
@@ -100,7 +99,6 @@ namespace NuGet.Status
                 _authority = new Uri(new Uri(_aadInstance), _tenant).ToString();
 
                 _rootUri = idaConfiguration.RootUri;
-                _redirectUri = new Uri(new Uri(_rootUri), "admin").ToString();
             }
         }
     }

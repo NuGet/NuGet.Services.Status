@@ -67,13 +67,13 @@ namespace NuGet.Status
                             RedirectToIdentityProvider = notification =>
                             {
                                 notification.ProtocolMessage.Prompt = "select_account"; // force entering of credential
-                                return Task.FromResult(0);
+                                return Task.CompletedTask;
                             },
                             AuthenticationFailed = context =>
                             {
                                 context.HandleResponse();
                                 context.Response.Redirect("/Errors/BadRequest");
-                                return Task.FromResult(0);
+                                return Task.CompletedTask;
                             }
                         }
                     });

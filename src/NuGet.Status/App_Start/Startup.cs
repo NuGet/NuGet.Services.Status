@@ -21,7 +21,6 @@ namespace NuGet.Status
         private static string _tenant;
         private static string _authority;
         private static string _rootUri;
-        private static string _redirectUri;
         private static bool _postStatusEnabled;
 
         public void Configuration(IAppBuilder app)
@@ -55,20 +54,26 @@ namespace NuGet.Status
                     {
                         ClientId = _clientId,
                         Authority = _authority,
-                        RedirectUri = _redirectUri,
+                        RedirectUri = _rootUri + "/signin-oidc",
                         PostLogoutRedirectUri = _rootUri,
-                        TokenValidationParameters = new System.IdentityModel.Tokens.TokenValidationParameters
+                        CookieManager = new SystemWebChunkingCookieManager(),
+                        TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
                         {
                             ValidateIssuer = false,
                             RoleClaimType = "roles"
                         },
                         Notifications = new OpenIdConnectAuthenticationNotifications
                         {
+                            RedirectToIdentityProvider = notification =>
+                            {
+                                notification.ProtocolMessage.Prompt = "select_account"; // force entering of credential
+                                return Task.CompletedTask;
+                            },
                             AuthenticationFailed = context =>
                             {
                                 context.HandleResponse();
                                 context.Response.Redirect("/Errors/BadRequest");
-                                return Task.FromResult(0);
+                                return Task.CompletedTask;
                             }
                         }
                     });
@@ -94,7 +99,6 @@ namespace NuGet.Status
                 _authority = new Uri(new Uri(_aadInstance), _tenant).ToString();
 
                 _rootUri = idaConfiguration.RootUri;
-                _redirectUri = new Uri(new Uri(_rootUri), "admin").ToString();
             }
         }
     }

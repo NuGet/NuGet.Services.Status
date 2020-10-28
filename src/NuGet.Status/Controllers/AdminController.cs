@@ -14,7 +14,7 @@ using NuGet.Status.Utilities;
 
 namespace NuGet.Status.Controllers
 {
-    [Authorize(Roles = "Admins")]
+    [AdminAuthorize]
     public class AdminController : AppController
     {
         public const string UpdatedTempDataKey = "Updated";

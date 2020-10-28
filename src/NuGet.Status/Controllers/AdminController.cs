@@ -23,8 +23,12 @@ namespace NuGet.Status.Controllers
         public const string UpdatedTempDataKey = "Updated";
 
         private string[] adminIdentities;
-        private string[] AdminIdentities => (adminIdentities = adminIdentities ?? 
-            (MvcApplication.StatusConfiguration.AdminIdentities?.Split(';') ?? null));
+
+        public AdminController()
+        {
+            adminIdentities = MvcApplication.StatusConfiguration?.AdminIdentities?.Split(';') ??
+                throw new HttpRequestException("Authorized user configuration failure.");
+        }
 
         [HttpGet]
         public ActionResult Index()
@@ -171,12 +175,7 @@ namespace NuGet.Status.Controllers
 
         private ActionResult TestForAuthErrors()
         {
-            if (AdminIdentities == null)
-            {
-                throw new HttpRequestException("Authorized user configuration failure.");
-            }
-
-            if (!(AdminIdentities.Any(x => x.Equals(HttpContext.User.Identity.Name, StringComparison.OrdinalIgnoreCase))))
+            if (!(adminIdentities.Any(x => x.Equals(HttpContext.User.Identity.Name, StringComparison.OrdinalIgnoreCase))))
             {
                 return new HttpUnauthorizedResult();
             }

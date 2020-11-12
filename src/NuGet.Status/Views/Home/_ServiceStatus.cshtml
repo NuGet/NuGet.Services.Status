@@ -126,17 +126,19 @@
     <p class="sr-only" id="service-status-table-caption">
         The status of NuGet services.
     </p>
-    <table class="table-responsive borderless" aria-describedby="service-status-table-caption">
-        <thead>
-            <tr class="headings">
-                <th scope="col">Name</th>
-                <th scope="col">Description</th>
-                <th scope="col">Status</th>
-            </tr>
-        </thead>
-        @foreach (var subcomponent in Model.ServiceRootComponent.SubComponents)
-        {
-            @RenderComponent(subcomponent)
-        }
-    </table>
+    <div class="table-responsive">
+        <table class="table borderless" aria-describedby="service-status-table-caption">
+            <thead>
+                <tr class="headings">
+                    <th scope="col">Name</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Status</th>
+                </tr>
+            </thead>
+            @foreach (var subcomponent in Model.ServiceRootComponent.SubComponents)
+            {
+                @RenderComponent(subcomponent)
+            }
+        </table>
+    </div>
 }

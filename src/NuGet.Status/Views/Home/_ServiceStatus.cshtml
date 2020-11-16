@@ -135,10 +135,170 @@
                     <th scope="col">Status</th>
                 </tr>
             </thead>
-            @foreach (var subcomponent in Model.ServiceRootComponent.SubComponents)
-            {
-                @RenderComponent(subcomponent)
-            }
+            @*            @foreach (var subcomponent in Model.ServiceRootComponent.SubComponents)
+        {
+            @RenderComponent(subcomponent)
+        }*@
+            <tbody class="aggregate             status-up
+">
+                <tr>
+                    <td>
+                        NuGet.org
+                    </td>
+                    <td>
+                        Browsing the Gallery website
+                    </td>
+                    <td>
+                        <i class="ms-Icon ms-Icon--CheckMark"></i><span>Operational</span>
+
+                    </td>
+                </tr>
+            </tbody>
+            <tbody class="aggregate             status-up
+">
+                <tr>
+                    <td>
+                        <a class="collapsed" href="#" role="button" data-toggle="collapse" data-target="#NuGet_Restore"
+                           aria-expanded="false" aria-controls="NuGet_Restore" id="show-NuGet_Restore">
+                            <i class="ms-Icon ms-Icon--ChevronRight" aria-hidden="true"></i>
+                            <span>Restore</span>
+                        </a>
+                    </td>
+                    <td>
+                        Downloading and installing packages from NuGet
+                    </td>
+                    <td>
+                        <i class="ms-Icon ms-Icon--CheckMark"></i><span>Operational</span>
+
+                    </td>
+                </tr>
+            </tbody>
+            <tbody class="panel panel-default panel-collapse collapse " aria-expanded="false" id="NuGet_Restore">
+                <tr>
+                    <td>
+
+                        V3 Protocol
+
+                    </td>
+                    <td>
+                        Restore using the V3 API
+                    </td>
+                    <td>
+                        <i class="ms-Icon ms-Icon--CheckMark"></i><span>Operational</span>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="nonaggregate">
+
+                            Global
+
+                        </span>
+                    </td>
+                    <td>
+                        V3 restore for users outside of China
+                    </td>
+                    <td>
+                        <i class="ms-Icon ms-Icon--CheckMark"></i><span>Operational</span>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="nonaggregate">
+
+                            China
+
+                        </span>
+                    </td>
+                    <td>
+                        V3 restore for users inside China
+                    </td>
+                    <td>
+                        <i class="ms-Icon ms-Icon--CheckMark"></i><span>Operational</span>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+
+                        V2 Protocol
+
+                    </td>
+                    <td>
+                        Restore using the V2 API
+                    </td>
+                    <td>
+                        <i class="ms-Icon ms-Icon--CheckMark"></i><span>Operational</span>
+
+                    </td>
+                </tr>
+            </tbody>
+            <tbody class="aggregate             status-up
+">
+                <tr>
+                    <td>
+                        <a class="collapsed" href="#" role="button" data-toggle="collapse" data-target="#NuGet_Search"
+                           aria-expanded="false" aria-controls="NuGet_Search" id="show-NuGet_Search">
+                            <i class="ms-Icon ms-Icon--ChevronRight" aria-hidden="true"></i>
+                            <span>Search</span>
+                        </a>
+                    </td>
+                    <td>
+                        Searching for new and existing packages in Visual Studio or the Gallery website
+                    </td>
+                    <td>
+                        <i class="ms-Icon ms-Icon--CheckMark"></i><span>Operational</span>
+
+                    </td>
+                </tr>
+            </tbody>
+            <tbody class="panel panel-default panel-collapse collapse " aria-expanded="false" id="NuGet_Search">
+                <tr>
+                    <td>
+
+                        Global
+
+                    </td>
+                    <td>
+                        Search for packages outside China
+                    </td>
+                    <td>
+                        <i class="ms-Icon ms-Icon--CheckMark"></i><span>Operational</span>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+
+                        China
+
+                    </td>
+                    <td>
+                        Search for packages inside China
+                    </td>
+                    <td>
+                        <i class="ms-Icon ms-Icon--CheckMark"></i><span>Operational</span>
+
+                    </td>
+                </tr>
+            </tbody>
+            <tbody class="aggregate             status-up
+">
+                <tr>
+                    <td>
+                        Package Publishing
+                    </td>
+                    <td>
+                        Uploading new packages to NuGet.org
+                    </td>
+                    <td>
+                        <i class="ms-Icon ms-Icon--CheckMark"></i><span>Operational</span>
+
+                    </td>
+                </tr>
+            </tbody>
         </table>
     </div>
 }

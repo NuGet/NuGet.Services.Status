@@ -82,9 +82,11 @@ namespace NuGet.Status
 
         private async Task RefreshConfigurationForever(CancellationToken token)
         {
-            await Task.Delay(ConfigurationRefreshPeriod);
-            StatusConfiguration = await _configurationFactory.Get<StatusConfiguration>();
-            await RefreshConfigurationForever(token);
+            while (!token.IsCancellationRequested)
+            {
+                await Task.Delay(ConfigurationRefreshPeriod, token);
+                StatusConfiguration = await _configurationFactory.Get<StatusConfiguration>();
+            }
         }
     }
 }

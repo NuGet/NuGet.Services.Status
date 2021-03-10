@@ -56,10 +56,10 @@
     // There are no alerts on the status page.
 }
 
-@helper AnalyticsScript()
+@helper AnalyticsScript(dynamic ViewBag)
 {}
 
-@helper InstrumentationScript()
+@helper InstrumentationScript(dynamic ViewBag)
 {}
 
 @helper ReleaseMeta()
@@ -82,14 +82,19 @@
     // Gravatars are not displayed on the status page.
 }
 
-@helper UsabillaButton(UrlHelper url)
+@helper UsabillaButton(UrlHelper url, dynamic ViewBag)
 {
     // The Usabilla button is not displayed on the status page.
 }
 
-@helper UsabillaScript()
+@helper UsabillaScript(dynamic ViewBag)
 {
     // The Usabilla button is not displayed on the status page.
+}
+
+@helper CookieComplianceScript()
+{
+    // The cookie compliance script is not needed on the status page.
 }
 
 @helper PostLink(

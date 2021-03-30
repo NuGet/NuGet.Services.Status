@@ -4,7 +4,11 @@
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.Table;
+using NuGet.Status.Utilities;
 using System;
+using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace NuGet.Status.Helpers
 {
@@ -46,7 +50,18 @@ namespace NuGet.Status.Helpers
 
         public CloudStorageAccount GetCloudStorageAccount()
         {
-            return CloudStorageAccount.Parse(_getConnectionString());
+            var connectionString = _getConnectionString();
+            QuietLog.Event("ConnectionString", new Dictionary<string, string> { { "hash", GetHash(connectionString) } });
+            return CloudStorageAccount.Parse(connectionString);
+        }
+
+        private static string GetHash(string str)
+        {
+            using (var hasher = SHA256.Create())
+            {
+                var hash = hasher.ComputeHash(Encoding.UTF8.GetBytes(str));
+                return BitConverter.ToString(hash).Replace("-", "");
+            }
         }
     }
 }

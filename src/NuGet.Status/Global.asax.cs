@@ -22,7 +22,7 @@ namespace NuGet.Status
 {
     public class MvcApplication : System.Web.HttpApplication
     {
-        private static TimeSpan ConfigurationRefreshPeriod = new TimeSpan(days: 0, hours: 0, minutes: 15, seconds: 0);
+        private static TimeSpan ConfigurationRefreshPeriod = new TimeSpan(days: 0, hours: 0, minutes: 10, seconds: 0);
         private static readonly IConfigurationFactory _configurationFactory;
 
         public static StatusConfiguration StatusConfiguration { get; private set; }

@@ -63,7 +63,8 @@ namespace NuGet.Status.Configuration
                 if (!_configurationDictionary.TryGetValue(CacheRefreshIntervalKey, out var cacheRefresh)
                     || !int.TryParse(cacheRefresh, out int refreshIntervalSec))
                 {
-                    refreshIntervalSec = CachingSecretReader.DefaultRefreshIntervalSec;
+                    // TODO: undo
+                    refreshIntervalSec = 300;
                 }
 
                 secretReader = new KeyVaultReader(keyVaultConfiguration);

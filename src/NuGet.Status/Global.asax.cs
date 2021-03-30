@@ -86,6 +86,7 @@ namespace NuGet.Status
             {
                 await Task.Delay(ConfigurationRefreshPeriod, token);
                 StatusConfiguration = await _configurationFactory.Get<StatusConfiguration>();
+                QuietLog.Event("ConfigurationUpdated");
             }
         }
     }

@@ -11,7 +11,7 @@ param (
     [string]$PackageSuffix,
     [string]$Branch,
     [string]$CommitSHA,
-    [string]$BuildBranch = 'snapshot',
+    [string]$BuildBranch = 'dj-azdo-patsupport',
     [string]$AccessToken
 )
 

@@ -11,7 +11,8 @@ param (
     [string]$PackageSuffix,
     [string]$Branch,
     [string]$CommitSHA,
-    [string]$BuildBranch = 'd298565f387e93995a179ef8ae6838f1be37904f'
+    [string]$BuildBranch = 'snapshot',
+    [string]$AccessToken
 )
 
 Set-StrictMode -Version 1.0
@@ -71,7 +72,7 @@ Invoke-BuildStep 'Getting private build tools' { Install-PrivateBuildTools } `
 Invoke-BuildStep 'Cleaning test results' { Clean-Tests } `
     -ev +BuildErrors
 
-Invoke-BuildStep 'Installing NuGet.exe' { Install-NuGet } `
+Invoke-BuildStep 'Installing NuGet.exe' { Install-NuGet -AccessToken $AccessToken } `
     -ev +BuildErrors
     
 Invoke-BuildStep 'Clearing package cache' { Clear-PackageCache } `

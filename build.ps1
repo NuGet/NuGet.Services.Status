@@ -11,8 +11,7 @@ param (
     [string]$PackageSuffix,
     [string]$Branch,
     [string]$CommitSHA,
-    [string]$BuildBranch = 'dj-azdo-patsupport',
-    [string]$AccessToken
+    [string]$BuildBranchCommit = 'main'
 )
 
 Set-StrictMode -Version 1.0
@@ -33,8 +32,8 @@ if (-not (Test-Path "$PSScriptRoot/build")) {
 # Enable TLS 1.2 since GitHub requires it.
 [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
 
-Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/NuGet/ServerCommon/$BuildBranch/build/init.ps1" -OutFile "$PSScriptRoot/build/init.ps1"
-. "$PSScriptRoot/build/init.ps1" -BuildBranch "$BuildBranch"
+Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/NuGet/ServerCommon/$BuildBranchCommit/build/init.ps1" -OutFile "$PSScriptRoot/build/init.ps1"
+. "$PSScriptRoot/build/init.ps1" -BuildBranchCommit "$BuildBranchCommit"
 
 Function Clean-Tests {
     [CmdletBinding()]
@@ -72,7 +71,7 @@ Invoke-BuildStep 'Getting private build tools' { Install-PrivateBuildTools } `
 Invoke-BuildStep 'Cleaning test results' { Clean-Tests } `
     -ev +BuildErrors
 
-Invoke-BuildStep 'Installing NuGet.exe' { Install-NuGet -AccessToken $AccessToken } `
+Invoke-BuildStep 'Installing NuGet.exe' { Install-NuGet } `
     -ev +BuildErrors
     
 Invoke-BuildStep 'Clearing package cache' { Clear-PackageCache } `

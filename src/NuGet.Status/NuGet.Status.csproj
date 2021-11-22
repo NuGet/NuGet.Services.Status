@@ -172,6 +172,11 @@
     <PackageReference Include="Microsoft.AspNet.Web.Optimization">
       <Version>1.1.3</Version>
     </PackageReference>
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
+      <Version>3.3.0</Version>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.Owin.Host.SystemWeb">
       <Version>4.1.1</Version>
     </PackageReference>

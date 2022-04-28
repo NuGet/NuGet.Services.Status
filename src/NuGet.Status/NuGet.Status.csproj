@@ -74,6 +74,7 @@
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Helpers\AdminAuthorizeAttribute.cs" />
+    <Compile Include="Helpers\AdminHelper.cs" />
     <Compile Include="Helpers\CachedServiceStatus.cs" />
     <Compile Include="Helpers\CoreConstants.cs" />
     <Compile Include="Helpers\ServiceStatusHelper.cs" />

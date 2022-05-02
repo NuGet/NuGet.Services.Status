@@ -74,6 +74,7 @@
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Helpers\AdminAuthorizeAttribute.cs" />
+    <Compile Include="Helpers\AdminHelper.cs" />
     <Compile Include="Helpers\CachedServiceStatus.cs" />
     <Compile Include="Helpers\CoreConstants.cs" />
     <Compile Include="Helpers\ServiceStatusHelper.cs" />
@@ -134,7 +135,6 @@
     <Content Include="Views\Home\_StatusUpdates.cshtml" />
     <Content Include="Service References\Application Insights\ConnectedService.json" />
     <Content Include="Views\Home\_LatestStatusUpdate.cshtml" />
-    <Content Include="Views\Home\_CdnStatus.cshtml" />
     <Content Include="Views\Admin\Index.cshtml" />
     <Content Include="Views\Admin\_Create.cshtml" />
     <Content Include="Views\Admin\_Edit.cshtml" />

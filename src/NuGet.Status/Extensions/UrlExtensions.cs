@@ -123,5 +123,10 @@ namespace NuGet.Status.Helpers
         {
             return url.RequestContext.HttpContext.Request.RawUrl;
         }
+
+        public static string GetCanonicalLinkUrl(this UrlHelper url)
+        {
+            return "";
+        }
     }
 }

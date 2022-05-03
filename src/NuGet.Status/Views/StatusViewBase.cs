@@ -33,6 +33,8 @@ namespace NuGet.Status.Views
         public bool DeprecateNuGetPasswordLogins => false;
 
         public string ExternalStatusUrl => "/";
+
+        public string SiteRoot => "";
     }
 
     public class Config

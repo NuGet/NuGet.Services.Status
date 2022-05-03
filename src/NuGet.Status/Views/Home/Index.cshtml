@@ -47,11 +47,6 @@
             @Html.Partial("_ServiceStatus", Model)
         </div>
     </div>
-    <div class="row">
-        <div class="col-xs-12">
-            @Html.Partial("_CdnStatus", Model)
-        </div>
-    </div>
     @if (Model != null && Model.Events != null && Model.Events.Any())
     {
         <div class="row">

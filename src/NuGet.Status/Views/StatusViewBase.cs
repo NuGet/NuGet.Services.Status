@@ -35,6 +35,8 @@ namespace NuGet.Status.Views
         public string ExternalStatusUrl => "/";
 
         public string SiteRoot => "";
+
+        public string testString => "";
     }
 
     public class Config

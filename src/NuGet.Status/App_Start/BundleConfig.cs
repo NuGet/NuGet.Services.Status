@@ -17,9 +17,8 @@ namespace NuGet.Status
                     "~/Scripts/gallery/jquery-3.4.1.js",
                     "~/Scripts/gallery/jquery.validate-1.16.0.js",
                     "~/Scripts/gallery/jquery.validate.unobtrusive-3.2.6.js",
-                    "~/Scripts/gallery/knockout-3.4.2.js",
                     "~/Scripts/gallery/bootstrap.js",
-                    "~/Scripts/gallery/moment-2.18.1.js",
+                    "~/Scripts/gallery/moment-2.29.4.js",
                     "~/Scripts/gallery/common.js",
                     "~/Scripts/gallery/page-status.js"));
         }

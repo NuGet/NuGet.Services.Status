@@ -12,6 +12,7 @@ namespace NuGet.Status.Configuration
     {
         public const string UseManagedIdentityKey = "KeyVault:UseManagedIdentity";
         public const string VaultNameKey = "KeyVault:VaultName";
+        public const string TenantIdKey = "KeyVault:TenantId";
         public const string ClientIdKey = "KeyVault:ClientId";
         public const string CertificateThumbprintKey = "KeyVault:CertificateThumbprint";
         public const string StoreNameKey = "KeyVault:StoreName";
@@ -47,6 +48,7 @@ namespace NuGet.Status.Configuration
                 }
                 else
                 {
+                    var tenantId = _configurationDictionary[TenantIdKey];
                     var clientId = _configurationDictionary[ClientIdKey];
                     var certificateThumbprint = _configurationDictionary[CertificateThumbprintKey];
                     var storeLocation = _configurationDictionary[StoreLocationKey];
@@ -57,7 +59,7 @@ namespace NuGet.Status.Configuration
                         (StoreLocation)Enum.Parse(typeof(StoreLocation), storeLocation),
                         certificateThumbprint,
                         bool.Parse(validateCertificate));
-                    keyVaultConfiguration = new KeyVaultConfiguration(vaultName, clientId, certificate);
+                    keyVaultConfiguration = new KeyVaultConfiguration(vaultName, tenantId, clientId, certificate);
                 }
 
                 if (!_configurationDictionary.TryGetValue(CacheRefreshIntervalKey, out var cacheRefresh)

@@ -39,17 +39,25 @@ namespace NuGet.Status.Configuration
             }
             else
             {
+                _configurationDictionary.TryGetValue(ClientIdKey, out var clientId);
+
                 KeyVaultConfiguration keyVaultConfiguration;
                 if (_configurationDictionary.TryGetValue(UseManagedIdentityKey, out var useManagedIdentityStr)
                     && bool.TryParse(useManagedIdentityStr, out var useManagedIdentity)
                     && useManagedIdentity)
                 {
-                    keyVaultConfiguration = new KeyVaultConfiguration(vaultName);
+                    if (string.IsNullOrEmpty(clientId))
+                    {
+                        keyVaultConfiguration = new KeyVaultConfiguration(vaultName);
+                    }
+                    else
+                    {
+                        keyVaultConfiguration = new KeyVaultConfiguration(vaultName, clientId);
+                    }
                 }
                 else
                 {
                     var tenantId = _configurationDictionary[TenantIdKey];
-                    var clientId = _configurationDictionary[ClientIdKey];
                     var certificateThumbprint = _configurationDictionary[CertificateThumbprintKey];
                     var storeLocation = _configurationDictionary[StoreLocationKey];
                     var storeName = _configurationDictionary[StoreNameKey];

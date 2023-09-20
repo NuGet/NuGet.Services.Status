@@ -12,6 +12,7 @@ namespace NuGet.Status.Configuration
     {
         public const string UseManagedIdentityKey = "KeyVault:UseManagedIdentity";
         public const string VaultNameKey = "KeyVault:VaultName";
+        public const string TenantIdKey = "KeyVault:TenantId";
         public const string ClientIdKey = "KeyVault:ClientId";
         public const string CertificateThumbprintKey = "KeyVault:CertificateThumbprint";
         public const string StoreNameKey = "KeyVault:StoreName";
@@ -38,16 +39,25 @@ namespace NuGet.Status.Configuration
             }
             else
             {
+                _configurationDictionary.TryGetValue(ClientIdKey, out var clientId);
+
                 KeyVaultConfiguration keyVaultConfiguration;
                 if (_configurationDictionary.TryGetValue(UseManagedIdentityKey, out var useManagedIdentityStr)
                     && bool.TryParse(useManagedIdentityStr, out var useManagedIdentity)
                     && useManagedIdentity)
                 {
-                    keyVaultConfiguration = new KeyVaultConfiguration(vaultName);
+                    if (string.IsNullOrEmpty(clientId))
+                    {
+                        keyVaultConfiguration = new KeyVaultConfiguration(vaultName);
+                    }
+                    else
+                    {
+                        keyVaultConfiguration = new KeyVaultConfiguration(vaultName, clientId);
+                    }
                 }
                 else
                 {
-                    var clientId = _configurationDictionary[ClientIdKey];
+                    var tenantId = _configurationDictionary[TenantIdKey];
                     var certificateThumbprint = _configurationDictionary[CertificateThumbprintKey];
                     var storeLocation = _configurationDictionary[StoreLocationKey];
                     var storeName = _configurationDictionary[StoreNameKey];
@@ -57,7 +67,7 @@ namespace NuGet.Status.Configuration
                         (StoreLocation)Enum.Parse(typeof(StoreLocation), storeLocation),
                         certificateThumbprint,
                         bool.Parse(validateCertificate));
-                    keyVaultConfiguration = new KeyVaultConfiguration(vaultName, clientId, certificate);
+                    keyVaultConfiguration = new KeyVaultConfiguration(vaultName, tenantId, clientId, certificate);
                 }
 
                 if (!_configurationDictionary.TryGetValue(CacheRefreshIntervalKey, out var cacheRefresh)

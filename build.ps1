@@ -11,7 +11,7 @@ param (
     [string]$PackageSuffix,
     [string]$Branch,
     [string]$CommitSHA,
-    [string]$BuildBranch = '344f549684897666a619724271c36002405908bd' # DevSkim: ignore DS173237. It's a commit hash.
+    [string]$BuildBranch = '5295c6e0d2ae7357fccf01e48c56b768b192f022' # DevSkim: ignore DS173237. It's a commit hash.
 )
 
 Set-StrictMode -Version 1.0

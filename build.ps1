@@ -1,4 +1,4 @@
-[CmdletBinding(DefaultParameterSetName='RegularBuild')]
+[CmdletBinding(DefaultParameterSetName = 'RegularBuild')]
 param (
     [ValidateSet("debug", "release")]
     [string]$Configuration = 'debug',
@@ -11,7 +11,7 @@ param (
     [string]$PackageSuffix,
     [string]$Branch,
     [string]$CommitSHA,
-    [string]$BuildBranch = 'd298565f387e93995a179ef8ae6838f1be37904f'
+    [string]$BuildBranch = '5295c6e0d2ae7357fccf01e48c56b768b192f022' # DevSkim: ignore DS173237. It's a commit hash.
 )
 
 Set-StrictMode -Version 1.0
@@ -28,9 +28,6 @@ trap {
 if (-not (Test-Path "$PSScriptRoot/build")) {
     New-Item -Path "$PSScriptRoot/build" -ItemType "directory"
 }
-
-# Enable TLS 1.2 since GitHub requires it.
-[Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
 
 Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/NuGet/ServerCommon/$BuildBranch/build/init.ps1" -OutFile "$PSScriptRoot/build/init.ps1"
 . "$PSScriptRoot/build/init.ps1" -BuildBranch "$BuildBranch"
@@ -60,8 +57,8 @@ Invoke-BuildStep 'Reset all submodules' { Reset-Submodules } `
     -ev +BuildErrors
 
 Invoke-BuildStep "Update NuGetGallery submodule" {
-        Invoke-Git 'submodule', 'update', '--init', '--', 'src/NuGet.Status/NuGetGallery'
-    } `
+    Invoke-Git 'submodule', 'update', '--init', '--', 'src/NuGet.Status/NuGetGallery'
+} `
     -skip:($SkipSubModules) `
     -ev +BuildErrors
     
@@ -82,25 +79,25 @@ Invoke-BuildStep 'Clearing artifacts' { Clear-Artifacts } `
     -ev +BuildErrors
 
 Invoke-BuildStep 'Restoring solution packages' { `
-    Install-SolutionPackages -path (Join-Path $PSScriptRoot ".nuget\packages.config") -output (Join-Path $PSScriptRoot "packages") -excludeversion } `
+        Install-SolutionPackages -path (Join-Path $PSScriptRoot ".nuget\packages.config") -output (Join-Path $PSScriptRoot "packages") -excludeversion } `
     -skip:$SkipRestore `
     -ev +BuildErrors
     
 Invoke-BuildStep 'Set version metadata in AssemblyInfo.cs' {
     $Paths = `
-        (Join-Path $PSScriptRoot "src\NuGet.Status\Properties\AssemblyInfo.g.cs")
+    (Join-Path $PSScriptRoot "src\NuGet.Status\Properties\AssemblyInfo.g.cs")
 
     Foreach ($Path in $Paths) {
         Set-VersionInfo -Path $Path -Version $SimpleVersion -Branch $Branch -Commit $CommitSHA
     }
 } `
--ev +BuildErrors
+    -ev +BuildErrors
 
 Invoke-BuildStep 'Building solution' { 
     $SolutionPath = Join-Path $PSScriptRoot "src\NuGet.Status.sln"
     Build-Solution $Configuration $BuildNumber -MSBuildVersion "15" $SolutionPath -SkipRestore:$SkipRestore `
 } `
--ev +BuildErrors
+    -ev +BuildErrors
 
 Trace-Log ('-' * 60)
 
@@ -112,7 +109,7 @@ Trace-Log "Time elapsed $(Format-ElapsedTime ($endTime - $startTime))"
 Trace-Log ('=' * 60)
 
 if ($BuildErrors) {
-    $ErrorLines = $BuildErrors | %{ ">>> $($_.Exception.Message)" }
+    $ErrorLines = $BuildErrors | % { ">>> $($_.Exception.Message)" }
     Error-Log "Builds completed with $($BuildErrors.Count) error(s):`r`n$($ErrorLines -join "`r`n")" -Fatal
 }
 

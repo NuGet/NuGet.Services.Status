@@ -1,0 +1,74 @@
+name: NuGet.Services.Status CI $(BuildId)
+
+trigger:
+  branches:
+    include:
+    - '*'
+  batch: True
+
+variables:
+- name: BuildConfiguration
+  value: Release
+- name: Codeql.Enabled
+  value: true
+- name: nugetMultiFeedWarnLevel
+  value: none
+- name: NugetSecurityAnalysisWarningLevel
+  value: none
+- name: PackageVersion
+  value: $(SimplePackageVersion)$(PrereleaseVersion)
+- name: PrereleaseVersion
+  value: -$(NuGetServicesStatusBranch)-$(Build.BuildId)
+- name: SimplePackageVersion
+  value: 1.0.0
+- name: NuGetServicesStatusDirectory
+  value: nss
+- name: NuGetServicesStatusPath
+  value: $(Agent.BuildDirectory)\$(NuGetServicesStatusDirectory)
+- name: ArtifactsFolder
+  value: $(NuGetServicesStatusPath)\artifacts
+- name: NuGetServicesStatusBranch
+  value: $(Build.SourceBranchName)
+
+resources:
+  repositories:
+  - repository: self
+    type: git
+    ref: refs/heads/main
+  - repository: 1ESPipelineTemplates
+    type: git
+    name: 1ESPipelineTemplates/1ESPipelineTemplates
+    ref: refs/tags/release
+
+extends:
+  template: v1/1ES.Unofficial.PipelineTemplate.yml@1ESPipelineTemplates
+  parameters:
+    sdl:
+      git:
+        submodules: false
+        fetchDepth: 1
+    pool:
+      name: NuGet-1ES-Hosted-Pool
+      image: NuGet-1ESPT-Win2022
+      os: windows
+    customBuildTags:
+    - ES365AIMigrationTooling
+    stages:
+    - stage: stage
+      jobs:
+      - job: Phase_1
+        displayName: Phase 1
+        cancelTimeoutInMinutes: 1
+        steps:
+        - checkout: self
+          fetchDepth: 1
+          clean: true
+          fetchTags: false
+          path: $(NuGetServicesStatusDirectory)
+        - task: PowerShell@1
+          name: PowerShell_1
+          displayName: Build
+          inputs:
+            scriptName: $(NuGetServicesStatusPath)\build.ps1
+            arguments: -Configuration $(BuildConfiguration) -BuildNumber $(Build.BuildId) -SimpleVersion $(SimplePackageVersion) -SemanticVersion $(PackageVersion) -Branch $(NuGetServicesStatusBranch) -CommitSHA $(Build.SourceVersion)
+            workingFolder: $(NuGetServicesStatusPath)

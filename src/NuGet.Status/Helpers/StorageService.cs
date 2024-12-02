@@ -1,52 +1,63 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved. 
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information. 
 
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Blob;
-using Microsoft.WindowsAzure.Storage.Table;
+using Azure.Data.Tables;
+using Azure.Storage;
+using Azure.Storage.Blobs;
+
 using System;
+using Azure.Identity;
+using Microsoft.Extensions.Configuration;
+using static System.Net.WebRequestMethods;
 
 namespace NuGet.Status.Helpers
 {
     public class StorageService
     {
-        private readonly Func<string> _getConnectionString;
+        private readonly Func<string> _getAccountName;
+        private readonly Func<string> _getManagedIdentity;
 
         public string Name { get; }
 
-        public StorageService(string name, Func<string> getConnectionString)
+        public StorageService(string name, Func<string> getAccountName, Func<string> getManagedIdentity)
         {
             Name = name;
-            _getConnectionString = getConnectionString;
+            _getAccountName = getAccountName;
+            _getManagedIdentity = getManagedIdentity;
         }
 
-        public CloudBlockBlob GetCloudBlockBlob()
+        public BlobClient GetBlobClient()
         {
-            var container = GetCloudBlobContainer();
-            return container.GetBlockBlobReference(MvcApplication.StatusConfiguration.BlobName);
+            var container = GetBlobContainerClient();
+            return container.GetBlobClient(MvcApplication.StatusConfiguration.BlobName);
         }
 
-        public CloudBlobContainer GetCloudBlobContainer()
+        public BlobContainerClient GetBlobContainerClient()
         {
-            var storageAccount = GetCloudStorageAccount();
-
-            return storageAccount
-                .CreateCloudBlobClient()
-                .GetContainerReference(MvcApplication.StatusConfiguration.ContainerName);
+            var client = GetBlobServiceClient();
+            return client.GetBlobContainerClient(MvcApplication.StatusConfiguration.ContainerName);
         }
 
-        public CloudTable GetCloudTable()
+        public TableClient GetTableClient()
         {
-            var storageAccount = GetCloudStorageAccount();
-
-            return storageAccount
-                .CreateCloudTableClient()
-                .GetTableReference(MvcApplication.StatusConfiguration.TableName);
+            var client = GetTableServiceClient();
+            return client.GetTableClient(MvcApplication.StatusConfiguration.TableName);
         }
 
-        public CloudStorageAccount GetCloudStorageAccount()
+        public BlobServiceClient GetBlobServiceClient()
         {
-            return CloudStorageAccount.Parse(_getConnectionString());
+            var uri = new Uri($"BlobEndpoint=https://{_getAccountName()}.blob.core.windows.net");
+            var tokenCredential = new ManagedIdentityCredential(_getManagedIdentity());
+            var options = new BlobClientOptions();
+            return new BlobServiceClient(uri, tokenCredential, options);
         }
+
+        public TableServiceClient GetTableServiceClient()
+        {
+            var uri = new Uri($"https://{_getAccountName()}.table.core.windows.net");
+            var tokenCredential = new ManagedIdentityCredential(_getManagedIdentity());
+            return new TableServiceClient(uri, tokenCredential);
+        }
+
     }
 }

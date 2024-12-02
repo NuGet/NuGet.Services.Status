@@ -1,9 +1,13 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved. 
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information. 
 
+using Azure.Storage.Blobs.Models;
+using Azure.Storage.Blobs;
 using NuGet.Status.Utilities;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -53,9 +57,13 @@ namespace NuGet.Status.Helpers
 
         private static async Task<CachedServiceStatus> GetServiceStatusAsync(CancellationToken token)
         {
-            var blob = StorageHelper.PrimaryStorage.GetCloudBlockBlob();
-            var json = await blob.DownloadTextAsync(token);
-            return new CachedServiceStatus(json);
+            var blob = StorageHelper.PrimaryStorage.GetBlobClient();
+            BlobDownloadInfo download = await blob.DownloadAsync();
+            using (var reader = new StreamReader(download.Content, Encoding.UTF8))
+            {
+                string json = await reader.ReadToEndAsync();
+                return new CachedServiceStatus(json);
+            }
         }
     }
 }

@@ -30,11 +30,15 @@ namespace NuGet.Status.Configuration
 
         [ConfigurationKeyPrefix(StoragePrefix)]
         [Required]
-        public string ConnectionString { get; set; }
+        public string AccountName { get; set; }
 
         [ConfigurationKeyPrefix(StoragePrefix)]
         [Required]
-        public string SecondaryConnectionString { get; set; }
+        public string SecondaryAccountName { get; set; }
+
+        [ConfigurationKeyPrefix(StoragePrefix)]
+        [Required]
+        public string ManagedIdentity { get; set; }
 
         [ConfigurationKeyPrefix(StoragePrefix)]
         [Required]

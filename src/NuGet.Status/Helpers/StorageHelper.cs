@@ -7,9 +7,11 @@ namespace NuGet.Status.Helpers
     {
         public static StorageService PrimaryStorage => new StorageService(
             "primary",
-            () => MvcApplication.StatusConfiguration.ConnectionString);
+            () => MvcApplication.StatusConfiguration.AccountName,
+            () => MvcApplication.StatusConfiguration.ManagedIdentity);
         public static StorageService SecondaryStorage => new StorageService(
             "secondary",
-            () => MvcApplication.StatusConfiguration.SecondaryConnectionString);
+            () => MvcApplication.StatusConfiguration.SecondaryAccountName,
+            () => MvcApplication.StatusConfiguration.ManagedIdentity);
     }
 }

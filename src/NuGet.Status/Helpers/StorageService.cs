@@ -5,6 +5,8 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.Table;
 using System;
+using Azure.Data.Tables;
+using Azure.Storage.Blobs;
 
 namespace NuGet.Status.Helpers
 {
@@ -26,6 +28,14 @@ namespace NuGet.Status.Helpers
             return container.GetBlockBlobReference(MvcApplication.StatusConfiguration.BlobName);
         }
 
+        /*
+        public BlobClient GetBlobClient()
+        {
+            BlobContainerClient containerClient = GetBlobContainerClient();
+            return containerClient.GetBlobClient(MvcApplication.StatusConfiguration.BlobName);
+        }
+        */
+
         public CloudBlobContainer GetCloudBlobContainer()
         {
             var storageAccount = GetCloudStorageAccount();
@@ -35,6 +45,14 @@ namespace NuGet.Status.Helpers
                 .GetContainerReference(MvcApplication.StatusConfiguration.ContainerName);
         }
 
+        /*
+        public BlobContainerClient GetBlobContainerClient()
+        {
+            var blobServiceClient = new BlobServiceClient(_getConnectionString()); // TODO: MSI
+            return blobServiceClient.GetBlobContainerClient(MvcApplication.StatusConfiguration.ContainerName);
+        }
+        */
+
         public CloudTable GetCloudTable()
         {
             var storageAccount = GetCloudStorageAccount();
@@ -43,6 +61,14 @@ namespace NuGet.Status.Helpers
                 .CreateCloudTableClient()
                 .GetTableReference(MvcApplication.StatusConfiguration.TableName);
         }
+
+        /*
+        public TableClient GetTableClient()
+        {
+            var tableServiceClient = new TableServiceClient(_getConnectionString()); // TODO: MSI
+            return tableServiceClient.GetTableClient(MvcApplication.StatusConfiguration.TableName);
+        }
+        */
 
         public CloudStorageAccount GetCloudStorageAccount()
         {

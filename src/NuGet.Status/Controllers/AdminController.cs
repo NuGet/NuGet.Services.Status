@@ -119,7 +119,7 @@ namespace NuGet.Status.Controllers
             try
             {
                 var table = storageService.GetCloudTable();
-                var operation = TableOperation.Insert(entity);
+                var operation = TableOperation.Insert((ITableEntity)entity);
                 await table.ExecuteAsync(operation);
                 return true;
             }

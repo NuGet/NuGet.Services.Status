@@ -38,7 +38,6 @@ namespace NuGet.Status.Configuration
         [Required]
         public string SecondaryConnectionString { get; set; }
 
-        [Required]
         public string ManagedIdentityClientId { get; set; }
 
         [ConfigurationKeyPrefix(StoragePrefix)]

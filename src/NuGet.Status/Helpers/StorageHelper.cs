@@ -11,5 +11,18 @@ namespace NuGet.Status.Helpers
         public static StorageService SecondaryStorage => new StorageService(
             "secondary",
             () => MvcApplication.StatusConfiguration.SecondaryConnectionString);
+
+        public static StorageService PrimaryStorage1 => new StorageService(
+            "primary",
+            MvcApplication.StatusConfiguration.UseManagedIdentity,
+            MvcApplication.StatusConfiguration.ManagedIdentityClientId,
+            () => MvcApplication.StatusConfiguration.PrimaryStorageBlobEndpoint,
+            () => MvcApplication.StatusConfiguration.PrimaryStorageTableEndpoint);
+        public static StorageService SecondaryStorage1 => new StorageService(
+            "secondary",
+            MvcApplication.StatusConfiguration.UseManagedIdentity,
+            MvcApplication.StatusConfiguration.ManagedIdentityClientId,
+            () => MvcApplication.StatusConfiguration.SecondaryStorageBlobEndpoint,
+            () => MvcApplication.StatusConfiguration.SecondaryStorageTableEndpoint);
     }
 }

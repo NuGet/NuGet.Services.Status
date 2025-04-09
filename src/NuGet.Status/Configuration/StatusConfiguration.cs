@@ -28,13 +28,38 @@ namespace NuGet.Status.Configuration
         [ConfigurationKeyPrefix(IdaConfiguration.IdaPrefix)]
         public bool AdminEnabled { get; set; }
 
+        // OLD
         [ConfigurationKeyPrefix(StoragePrefix)]
         [Required]
         public string ConnectionString { get; set; }
 
+        // OLD
         [ConfigurationKeyPrefix(StoragePrefix)]
         [Required]
         public string SecondaryConnectionString { get; set; }
+
+        [Required]
+        public string ManagedIdentityClientId { get; set; }
+
+        [ConfigurationKeyPrefix(StoragePrefix)]
+        [Required]
+        public string UseManagedIdentity { get; set; }
+
+        [ConfigurationKeyPrefix(StoragePrefix)]
+        [Required]
+        public string PrimaryStorageBlobEndpoint { get; set; }
+
+        [ConfigurationKeyPrefix(StoragePrefix)]
+        [Required]
+        public string PrimaryStorageTableEndpoint { get; set; }
+
+        [ConfigurationKeyPrefix(StoragePrefix)]
+        [Required]
+        public string SecondaryStorageBlobEndpoint { get; set; }
+
+        [ConfigurationKeyPrefix(StoragePrefix)]
+        [Required]
+        public string SecondaryStorageTableEndpoint { get; set; }
 
         [ConfigurationKeyPrefix(StoragePrefix)]
         [Required]

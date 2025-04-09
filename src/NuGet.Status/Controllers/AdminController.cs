@@ -119,13 +119,13 @@ namespace NuGet.Status.Controllers
         {
             try
             {
-                var table = storageService.GetCloudTable();
-                var operation = TableOperation.Insert((Microsoft.WindowsAzure.Storage.Table.ITableEntity)entity);
-                await table.ExecuteAsync(operation);
-                /*
+                //var table = storageService.GetCloudTable();
+                //var operation = TableOperation.Insert((Microsoft.WindowsAzure.Storage.Table.ITableEntity)entity);
+                //await table.ExecuteAsync(operation);
+
                 TableClient tableClient = storageService.GetTableClient();
                 await tableClient.AddEntityAsync(entity);
-                */
+
                 return true;
             }
             catch (Exception e)

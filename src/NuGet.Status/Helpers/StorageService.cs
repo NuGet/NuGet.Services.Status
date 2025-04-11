@@ -13,7 +13,7 @@ namespace NuGet.Status.Helpers
 {
     public class StorageService
     {
-        private readonly Func<string> _getConnectionString; // OLD
+        //private readonly Func<string> _getConnectionString; // OLD
 
         private readonly bool _useManagedIdentity;
         private readonly string _managedIdentityClientId;
@@ -22,6 +22,7 @@ namespace NuGet.Status.Helpers
 
         public string Name { get; }
 
+        /*
         public StorageService(string name, Func<string> getConnectionString) // OLD
         {
             Name = name;
@@ -56,6 +57,7 @@ namespace NuGet.Status.Helpers
         {
             return CloudStorageAccount.Parse(_getConnectionString());
         }
+        */
 
         // Do we need lazy loading for connection strings? We're not using KV secret injection for SAS tokens any more, does that change things?
         // Do we need to pass config values in the ctor at all? Looks like we can just use the config values directly in the methods (MvcApplication...).

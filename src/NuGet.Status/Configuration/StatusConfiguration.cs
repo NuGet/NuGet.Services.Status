@@ -28,6 +28,7 @@ namespace NuGet.Status.Configuration
         [ConfigurationKeyPrefix(IdaConfiguration.IdaPrefix)]
         public bool AdminEnabled { get; set; }
 
+        /*
         // OLD
         [ConfigurationKeyPrefix(StoragePrefix)]
         [Required]
@@ -37,6 +38,7 @@ namespace NuGet.Status.Configuration
         [ConfigurationKeyPrefix(StoragePrefix)]
         [Required]
         public string SecondaryConnectionString { get; set; }
+        */
 
         public string ManagedIdentityClientId { get; set; }
 

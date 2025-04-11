@@ -5,15 +5,6 @@ namespace NuGet.Status.Helpers
 {
     public static class StorageHelper
     {
-        /*
-        public static StorageService PrimaryStorage => new StorageService(
-            "primary",
-            () => MvcApplication.StatusConfiguration.ConnectionString);
-        public static StorageService SecondaryStorage => new StorageService(
-            "secondary",
-            () => MvcApplication.StatusConfiguration.SecondaryConnectionString);
-        */
-
         // need lazy loading for useMSI and ClientId too? Don't need lazy loading for any of them?
         public static StorageService PrimaryStorage => new StorageService(
             "primary",

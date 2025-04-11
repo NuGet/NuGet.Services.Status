@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using Microsoft.WindowsAzure.Storage.Table;
 using Azure.Data.Tables;
 using NuGet.Services.Status.Table.Manual;
 using NuGet.Status.Helpers;
@@ -119,10 +118,6 @@ namespace NuGet.Status.Controllers
         {
             try
             {
-                //var table = storageService.GetCloudTable();
-                //var operation = TableOperation.Insert((Microsoft.WindowsAzure.Storage.Table.ITableEntity)entity);
-                //await table.ExecuteAsync(operation);
-
                 TableClient tableClient = storageService.GetTableClient();
                 await tableClient.AddEntityAsync(entity);
 

@@ -1,9 +1,6 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved. 
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information. 
 
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Blob;
-using Microsoft.WindowsAzure.Storage.Table;
 using System;
 using Azure.Data.Tables;
 using Azure.Identity;
@@ -13,8 +10,6 @@ namespace NuGet.Status.Helpers
 {
     public class StorageService
     {
-        //private readonly Func<string> _getConnectionString; // OLD
-
         private readonly bool _useManagedIdentity;
         private readonly string _managedIdentityClientId;
         private readonly Func<string> _getBlobConnectionString;
@@ -22,45 +17,8 @@ namespace NuGet.Status.Helpers
 
         public string Name { get; }
 
-        /*
-        public StorageService(string name, Func<string> getConnectionString) // OLD
-        {
-            Name = name;
-            _getConnectionString = getConnectionString;
-        }
-
-        public CloudBlockBlob GetCloudBlockBlob() // OLD
-        {
-            var container = GetCloudBlobContainer();
-            return container.GetBlockBlobReference(MvcApplication.StatusConfiguration.BlobName);
-        }
-
-        public CloudBlobContainer GetCloudBlobContainer() // OLD
-        {
-            var storageAccount = GetCloudStorageAccount();
-
-            return storageAccount
-                .CreateCloudBlobClient()
-                .GetContainerReference(MvcApplication.StatusConfiguration.ContainerName);
-        }
-
-        public CloudTable GetCloudTable() // OLD
-        {
-            var storageAccount = GetCloudStorageAccount();
-
-            return storageAccount
-                .CreateCloudTableClient()
-                .GetTableReference(MvcApplication.StatusConfiguration.TableName);
-        }
-
-        public CloudStorageAccount GetCloudStorageAccount() // OLD
-        {
-            return CloudStorageAccount.Parse(_getConnectionString());
-        }
-        */
-
-        // Do we need lazy loading for connection strings? We're not using KV secret injection for SAS tokens any more, does that change things?
-        // Do we need to pass config values in the ctor at all? Looks like we can just use the config values directly in the methods (MvcApplication...).
+        // Do we need to use lazy loading for connection strings? We're not using KV secret injection for SAS tokens any more, does that change things?
+        // Do we need to pass config values in the ctor at all? Looks like we can just access the App config values directly in the methods (MvcApplication.Configuration..).
         public StorageService(
             string name,
             string useManagedIdentityStr,
@@ -68,6 +26,7 @@ namespace NuGet.Status.Helpers
             Func<string> getBlobConnectionString,
             Func<string> getTableConnectionString)
         {
+            Name = name;
             _useManagedIdentity = false;
             if (!bool.TryParse(useManagedIdentityStr, out _useManagedIdentity))
             {
@@ -89,13 +48,13 @@ namespace NuGet.Status.Helpers
             return containerClient.GetBlobClient(MvcApplication.StatusConfiguration.BlobName);
         }
 
-        public BlobContainerClient GetBlobContainerClient()
+        private BlobContainerClient GetBlobContainerClient()
         {
             BlobServiceClient blobServiceClient = GetBlobServiceClient();
             return blobServiceClient.GetBlobContainerClient(MvcApplication.StatusConfiguration.ContainerName);
         }
 
-        public BlobServiceClient GetBlobServiceClient()
+        private BlobServiceClient GetBlobServiceClient()
         {
             if (_useManagedIdentity)
             {
@@ -121,7 +80,7 @@ namespace NuGet.Status.Helpers
             return tableServiceClient.GetTableClient(MvcApplication.StatusConfiguration.TableName);
         }
 
-        public TableServiceClient GetTableServiceClient()
+        private TableServiceClient GetTableServiceClient()
         {
             if (_useManagedIdentity)
             {

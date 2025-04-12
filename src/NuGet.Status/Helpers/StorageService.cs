@@ -10,10 +10,10 @@ namespace NuGet.Status.Helpers
 {
     public class StorageService
     {
+        private readonly string _blobConnectionString;
+        private readonly string _tableConnectionString;
         private readonly bool _useManagedIdentity;
         private readonly string _managedIdentityClientId;
-        private readonly Func<string> _getBlobConnectionString;
-        private readonly Func<string> _getTableConnectionString;
 
         public string Name { get; }
 
@@ -21,25 +21,19 @@ namespace NuGet.Status.Helpers
         // Do we need to pass config values in the ctor at all? Looks like we can just access the App config values directly in the methods (MvcApplication.Configuration..).
         public StorageService(
             string name,
-            string useManagedIdentityStr,
-            string managedIdentityClientId,
-            Func<string> getBlobConnectionString,
-            Func<string> getTableConnectionString)
+            string blobConnectionString,
+            string tableConnectionString)
         {
             Name = name;
-            _useManagedIdentity = false;
-            if (!bool.TryParse(useManagedIdentityStr, out _useManagedIdentity))
+            _useManagedIdentity = MvcApplication.StatusConfiguration.UseManagedIdentity;
+
+            if (!string.IsNullOrWhiteSpace(MvcApplication.StatusConfiguration.ManagedIdentityClientId))
             {
-                throw new ArgumentException("Invalid value for Storage:UseManagedIdentity. Expected 'true' or 'false'.", nameof(useManagedIdentityStr));
+                _managedIdentityClientId = MvcApplication.StatusConfiguration.ManagedIdentityClientId;
             }
 
-            if (!string.IsNullOrWhiteSpace(managedIdentityClientId))
-            {
-                _managedIdentityClientId = managedIdentityClientId;
-            }
-
-            _getBlobConnectionString = getBlobConnectionString;
-            _getTableConnectionString = getTableConnectionString;
+            _blobConnectionString = blobConnectionString;
+            _tableConnectionString = tableConnectionString;
         }
 
         public BlobClient GetBlobClient()
@@ -61,17 +55,17 @@ namespace NuGet.Status.Helpers
                 if (string.IsNullOrWhiteSpace(_managedIdentityClientId))
                 {
                     // 1. Using MSI with DefaultAzureCredential
-                    return new BlobServiceClient(new Uri(_getBlobConnectionString()), new DefaultAzureCredential());
+                    return new BlobServiceClient(new Uri(_blobConnectionString), new DefaultAzureCredential());
                 }
                 else
                 {
                     // 2. Using MSI with ClientId
-                    return new BlobServiceClient(new Uri(_getBlobConnectionString()), new ManagedIdentityCredential(_managedIdentityClientId));
+                    return new BlobServiceClient(new Uri(_blobConnectionString), new ManagedIdentityCredential(_managedIdentityClientId));
                 }
             }
 
             // 3. Using SAS token
-            return new BlobServiceClient(_getBlobConnectionString());
+            return new BlobServiceClient(_blobConnectionString);
         }
 
         public TableClient GetTableClient()
@@ -87,17 +81,17 @@ namespace NuGet.Status.Helpers
                 if (string.IsNullOrWhiteSpace(_managedIdentityClientId))
                 {
                     // 1. Using MSI with DefaultAzureCredential
-                    return new TableServiceClient(new Uri(_getTableConnectionString()), new DefaultAzureCredential());
+                    return new TableServiceClient(new Uri(_tableConnectionString), new DefaultAzureCredential());
                 }
                 else
                 {
                     // 2. Using MSI with ClientId
-                    return new TableServiceClient(new Uri(_getTableConnectionString()), new ManagedIdentityCredential(_managedIdentityClientId));
+                    return new TableServiceClient(new Uri(_tableConnectionString), new ManagedIdentityCredential(_managedIdentityClientId));
                 }
             }
 
             // 3. Using SAS token
-            return new TableServiceClient(_getTableConnectionString());
+            return new TableServiceClient(_tableConnectionString);
         }
     }
 }

@@ -8,15 +8,11 @@ namespace NuGet.Status.Helpers
         // need lazy loading for useMSI and ClientId too? Don't need lazy loading for any of them?
         public static StorageService PrimaryStorage => new StorageService(
             "primary",
-            MvcApplication.StatusConfiguration.UseManagedIdentity,
-            MvcApplication.StatusConfiguration.ManagedIdentityClientId,
-            () => MvcApplication.StatusConfiguration.PrimaryStorageBlobEndpoint,
-            () => MvcApplication.StatusConfiguration.PrimaryStorageTableEndpoint);
+            MvcApplication.StatusConfiguration.PrimaryStorageBlobEndpoint,
+            MvcApplication.StatusConfiguration.PrimaryStorageTableEndpoint);
         public static StorageService SecondaryStorage => new StorageService(
             "secondary",
-            MvcApplication.StatusConfiguration.UseManagedIdentity,
-            MvcApplication.StatusConfiguration.ManagedIdentityClientId,
-            () => MvcApplication.StatusConfiguration.SecondaryStorageBlobEndpoint,
-            () => MvcApplication.StatusConfiguration.SecondaryStorageTableEndpoint);
+            MvcApplication.StatusConfiguration.SecondaryStorageBlobEndpoint,
+            MvcApplication.StatusConfiguration.SecondaryStorageTableEndpoint);
     }
 }

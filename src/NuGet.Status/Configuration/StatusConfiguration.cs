@@ -32,7 +32,7 @@ namespace NuGet.Status.Configuration
 
         [ConfigurationKeyPrefix(StoragePrefix)]
         [Required]
-        public string UseManagedIdentity { get; set; }
+        public bool UseManagedIdentity { get; set; }
 
         [ConfigurationKeyPrefix(StoragePrefix)]
         [Required]

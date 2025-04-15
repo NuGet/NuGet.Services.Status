@@ -119,7 +119,13 @@ namespace NuGet.Status.Controllers
             try
             {
                 TableClient tableClient = storageService.GetTableClient();
-                await tableClient.AddEntityAsync(entity);
+                var response = await tableClient.AddEntityAsync(entity);
+
+                if (response.IsError)
+                {
+                    QuietLog.TrackTrace($"Failed to insert entity to table in {storageService.Name} storage! Operation failed with code '{response.Status}' and reason '{response.ReasonPhrase}'.");
+                    return false;
+                }
 
                 return true;
             }

@@ -10,19 +10,20 @@ namespace NuGet.Status.Helpers
 {
     public class StorageService
     {
-        private readonly string _blobConnectionString;
-        private readonly string _tableConnectionString;
+        private readonly Func<string> _getBlobConnectionString;
+        private readonly Func<string> _getTableConnectionString;
         private readonly bool _useManagedIdentity;
         private readonly string _managedIdentityClientId;
 
+        private BlobClient _blobClient;
+        private TableClient _tableClient;
+
         public string Name { get; }
 
-        // Do we need to use lazy loading for connection strings? We're not using KV secret injection for SAS tokens any more, does that change things?
-        // Do we need to pass config values in the ctor at all? Looks like we can just access the App config values directly in the methods (MvcApplication.Configuration..).
         public StorageService(
             string name,
-            string blobConnectionString,
-            string tableConnectionString)
+            Func<string> getBlobConnectionString,
+            Func<string> getTableConnectionString)
         {
             Name = name;
             _useManagedIdentity = MvcApplication.StatusConfiguration.UseManagedIdentity;
@@ -32,14 +33,30 @@ namespace NuGet.Status.Helpers
                 _managedIdentityClientId = MvcApplication.StatusConfiguration.ManagedIdentityClientId;
             }
 
-            _blobConnectionString = blobConnectionString;
-            _tableConnectionString = tableConnectionString;
+            _getBlobConnectionString = getBlobConnectionString;
+            _getTableConnectionString = getTableConnectionString;
         }
 
         public BlobClient GetBlobClient()
         {
-            BlobContainerClient containerClient = GetBlobContainerClient();
-            return containerClient.GetBlobClient(MvcApplication.StatusConfiguration.BlobName);
+            if (_blobClient is null || _useManagedIdentity is false)
+            {
+                BlobContainerClient containerClient = GetBlobContainerClient();
+                _blobClient = containerClient.GetBlobClient(MvcApplication.StatusConfiguration.BlobName);
+            }
+
+            return _blobClient;
+        }
+
+        public TableClient GetTableClient()
+        {
+            if (_tableClient is null || _useManagedIdentity is false)
+            {
+                TableServiceClient tableServiceClient = GetTableServiceClient();
+                _tableClient = tableServiceClient.GetTableClient(MvcApplication.StatusConfiguration.TableName);
+            }
+
+            return _tableClient;
         }
 
         private BlobContainerClient GetBlobContainerClient()
@@ -55,23 +72,17 @@ namespace NuGet.Status.Helpers
                 if (string.IsNullOrWhiteSpace(_managedIdentityClientId))
                 {
                     // 1. Using MSI with DefaultAzureCredential
-                    return new BlobServiceClient(new Uri(_blobConnectionString), new DefaultAzureCredential());
+                    return new BlobServiceClient(new Uri(_getBlobConnectionString()), new DefaultAzureCredential());
                 }
                 else
                 {
                     // 2. Using MSI with ClientId
-                    return new BlobServiceClient(new Uri(_blobConnectionString), new ManagedIdentityCredential(_managedIdentityClientId));
+                    return new BlobServiceClient(new Uri(_getBlobConnectionString()), new ManagedIdentityCredential(_managedIdentityClientId));
                 }
             }
 
             // 3. Using SAS token
-            return new BlobServiceClient(_blobConnectionString);
-        }
-
-        public TableClient GetTableClient()
-        {
-            TableServiceClient tableServiceClient = GetTableServiceClient();
-            return tableServiceClient.GetTableClient(MvcApplication.StatusConfiguration.TableName);
+            return new BlobServiceClient(_getBlobConnectionString());
         }
 
         private TableServiceClient GetTableServiceClient()
@@ -81,17 +92,17 @@ namespace NuGet.Status.Helpers
                 if (string.IsNullOrWhiteSpace(_managedIdentityClientId))
                 {
                     // 1. Using MSI with DefaultAzureCredential
-                    return new TableServiceClient(new Uri(_tableConnectionString), new DefaultAzureCredential());
+                    return new TableServiceClient(new Uri(_getTableConnectionString()), new DefaultAzureCredential());
                 }
                 else
                 {
                     // 2. Using MSI with ClientId
-                    return new TableServiceClient(new Uri(_tableConnectionString), new ManagedIdentityCredential(_managedIdentityClientId));
+                    return new TableServiceClient(new Uri(_getTableConnectionString()), new ManagedIdentityCredential(_managedIdentityClientId));
                 }
             }
 
             // 3. Using SAS token
-            return new TableServiceClient(_tableConnectionString);
+            return new TableServiceClient(_getTableConnectionString());
         }
     }
 }

@@ -36,19 +36,11 @@ namespace NuGet.Status.Configuration
 
         [ConfigurationKeyPrefix(StoragePrefix)]
         [Required]
-        public string PrimaryStorageBlobEndpoint { get; set; }
+        public string PrimaryStorageConnectionString { get; set; }
 
         [ConfigurationKeyPrefix(StoragePrefix)]
         [Required]
-        public string PrimaryStorageTableEndpoint { get; set; }
-
-        [ConfigurationKeyPrefix(StoragePrefix)]
-        [Required]
-        public string SecondaryStorageBlobEndpoint { get; set; }
-
-        [ConfigurationKeyPrefix(StoragePrefix)]
-        [Required]
-        public string SecondaryStorageTableEndpoint { get; set; }
+        public string SecondaryStorageConnectionString { get; set; }
 
         [ConfigurationKeyPrefix(StoragePrefix)]
         [Required]

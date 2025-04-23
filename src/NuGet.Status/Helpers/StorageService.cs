@@ -10,8 +10,7 @@ namespace NuGet.Status.Helpers
 {
     public class StorageService
     {
-        private readonly Func<string> _getBlobConnectionString;
-        private readonly Func<string> _getTableConnectionString;
+        private readonly Func<string> _getStorageConnectionString;
         private readonly bool _useManagedIdentity;
         private readonly string _managedIdentityClientId;
 
@@ -22,8 +21,7 @@ namespace NuGet.Status.Helpers
 
         public StorageService(
             string name,
-            Func<string> getBlobConnectionString,
-            Func<string> getTableConnectionString)
+            Func<string> getStorageConnectionString)
         {
             Name = name;
             _useManagedIdentity = MvcApplication.StatusConfiguration.UseManagedIdentity;
@@ -33,8 +31,7 @@ namespace NuGet.Status.Helpers
                 _managedIdentityClientId = MvcApplication.StatusConfiguration.ManagedIdentityClientId;
             }
 
-            _getBlobConnectionString = getBlobConnectionString;
-            _getTableConnectionString = getTableConnectionString;
+            _getStorageConnectionString = getStorageConnectionString;
         }
 
         public BlobClient GetBlobClient()
@@ -72,17 +69,17 @@ namespace NuGet.Status.Helpers
                 if (string.IsNullOrWhiteSpace(_managedIdentityClientId))
                 {
                     // 1. Using MSI with DefaultAzureCredential
-                    return new BlobServiceClient(new Uri(_getBlobConnectionString()), new DefaultAzureCredential());
+                    return new BlobServiceClient(GetBlobServiceEndpoint(), new DefaultAzureCredential());
                 }
                 else
                 {
                     // 2. Using MSI with ClientId
-                    return new BlobServiceClient(new Uri(_getBlobConnectionString()), new ManagedIdentityCredential(_managedIdentityClientId));
+                    return new BlobServiceClient(GetBlobServiceEndpoint(), new ManagedIdentityCredential(_managedIdentityClientId));
                 }
             }
 
             // 3. Using SAS token
-            return new BlobServiceClient(_getBlobConnectionString());
+            return new BlobServiceClient(_getStorageConnectionString());
         }
 
         private TableServiceClient GetTableServiceClient()
@@ -92,17 +89,29 @@ namespace NuGet.Status.Helpers
                 if (string.IsNullOrWhiteSpace(_managedIdentityClientId))
                 {
                     // 1. Using MSI with DefaultAzureCredential
-                    return new TableServiceClient(new Uri(_getTableConnectionString()), new DefaultAzureCredential());
+                    return new TableServiceClient(GetTableServiceEndpoint(), new DefaultAzureCredential());
                 }
                 else
                 {
                     // 2. Using MSI with ClientId
-                    return new TableServiceClient(new Uri(_getTableConnectionString()), new ManagedIdentityCredential(_managedIdentityClientId));
+                    return new TableServiceClient(GetTableServiceEndpoint(), new ManagedIdentityCredential(_managedIdentityClientId));
                 }
             }
 
             // 3. Using SAS token
-            return new TableServiceClient(_getTableConnectionString());
+            return new TableServiceClient(_getStorageConnectionString());
+        }
+
+        private Uri GetBlobServiceEndpoint()
+        {
+            var temp = new BlobServiceClient(_getStorageConnectionString());
+            return temp.Uri;
+        }
+
+        private Uri GetTableServiceEndpoint()
+        {
+            var temp = new TableServiceClient(_getStorageConnectionString());
+            return temp.Uri;
         }
     }
 }

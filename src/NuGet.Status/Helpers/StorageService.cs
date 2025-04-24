@@ -2,6 +2,8 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information. 
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Azure.Data.Tables;
 using Azure.Identity;
 using Azure.Storage.Blobs;
@@ -110,8 +112,20 @@ namespace NuGet.Status.Helpers
 
         private Uri GetTableServiceEndpoint()
         {
-            var temp = new TableServiceClient(_getStorageConnectionString());
-            return temp.Uri;
+            var connectionString = _getStorageConnectionString();
+            var keyValuePairs = connectionString.Split(';')
+                .Select(part => part.Split('='))
+                .Where(parts => parts.Length == 2)
+                .ToDictionary(parts => parts[0], parts => parts[1]);
+
+            if (keyValuePairs.TryGetValue("TableEndpoint", out var tableEndpoint))
+            {
+                return new Uri(tableEndpoint);
+            }
+            else
+            {
+                throw new ArgumentException("TableEndpoint not found in connection string.");
+            }
         }
     }
 }

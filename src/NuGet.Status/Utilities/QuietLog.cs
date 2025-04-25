@@ -24,5 +24,11 @@ namespace NuGet.Status.Utilities
                 { "Message", message }
             });
         }
+
+        public static void TrackTrace(string message)
+        {
+            var telemetryClient = new TelemetryClient();
+            telemetryClient.TrackTrace(message);
+        }
     }
 }

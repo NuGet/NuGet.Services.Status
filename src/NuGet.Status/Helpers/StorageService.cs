@@ -110,6 +110,10 @@ namespace NuGet.Status.Helpers
             return temp.Uri;
         }
 
+        /// For <see cref="BlobServiceClient"/>, we can pass the connection string to the default ctor (even without any auth),
+        /// and it parses out the BlobEndpoint URI for us.
+        /// For <see cref="TableServiceClient"/>, this ctor requires a SAS token to be passed in the connection string,
+        /// so we cannot use the same method. We need to extract the TableEndpoint URI from the connection string manually.
         private Uri GetTableServiceEndpoint()
         {
             var connectionString = _getStorageConnectionString();

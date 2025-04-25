@@ -25,16 +25,22 @@ namespace NuGet.Status.Configuration
         public string ExternalTermsOfUseUrl { get; set; }
         public string TrademarksUrl { get; set; }
 
+        public string ManagedIdentityClientId { get; set; }
+
         [ConfigurationKeyPrefix(IdaConfiguration.IdaPrefix)]
         public bool AdminEnabled { get; set; }
 
         [ConfigurationKeyPrefix(StoragePrefix)]
         [Required]
-        public string ConnectionString { get; set; }
+        public bool UseManagedIdentity { get; set; }
 
         [ConfigurationKeyPrefix(StoragePrefix)]
         [Required]
-        public string SecondaryConnectionString { get; set; }
+        public string PrimaryStorageConnectionString { get; set; }
+
+        [ConfigurationKeyPrefix(StoragePrefix)]
+        [Required]
+        public string SecondaryStorageConnectionString { get; set; }
 
         [ConfigurationKeyPrefix(StoragePrefix)]
         [Required]

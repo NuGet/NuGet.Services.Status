@@ -7,9 +7,10 @@ namespace NuGet.Status.Helpers
     {
         public static StorageService PrimaryStorage => new StorageService(
             "primary",
-            () => MvcApplication.StatusConfiguration.ConnectionString);
+            () => MvcApplication.StatusConfiguration.PrimaryStorageConnectionString);
+
         public static StorageService SecondaryStorage => new StorageService(
             "secondary",
-            () => MvcApplication.StatusConfiguration.SecondaryConnectionString);
+            () => MvcApplication.StatusConfiguration.SecondaryStorageConnectionString);
     }
 }

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using Microsoft.WindowsAzure.Storage.Table;
+using Azure.Data.Tables;
 using NuGet.Services.Status.Table.Manual;
 using NuGet.Status.Helpers;
 using NuGet.Status.Models;
@@ -118,9 +118,15 @@ namespace NuGet.Status.Controllers
         {
             try
             {
-                var table = storageService.GetCloudTable();
-                var operation = TableOperation.Insert(entity);
-                await table.ExecuteAsync(operation);
+                TableClient tableClient = storageService.GetTableClient();
+                var response = await tableClient.AddEntityAsync(entity);
+
+                if (response.IsError)
+                {
+                    QuietLog.TrackTrace($"Failed to insert entity to table in {storageService.Name} storage! Operation failed with code '{response.Status}' and reason '{response.ReasonPhrase}'.");
+                    return false;
+                }
+
                 return true;
             }
             catch (Exception e)

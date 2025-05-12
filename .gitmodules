@@ -1,3 +1,0 @@
-[submodule "src/NuGet.Status/NuGetGallery"]
-	path = src/NuGet.Status/NuGetGallery
-	url = https://github.com/NuGet/NuGetGallery.git

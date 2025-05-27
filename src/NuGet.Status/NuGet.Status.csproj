@@ -141,7 +141,7 @@
     <Content Include="Views\Admin\_Edit.cshtml" />
     <Content Include="Views\Admin\_AddStatusEventMessage.cshtml" />
     <Content Include="Views\Admin\_EditStatusEventMessage.cshtml" />
-    <Content Include="Views\Admin\_EditStatusEvent.cshtml" /> 
+    <Content Include="Views\Admin\_EditStatusEvent.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Data\**" />

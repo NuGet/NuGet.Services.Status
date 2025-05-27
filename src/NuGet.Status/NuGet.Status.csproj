@@ -123,6 +123,7 @@
     <Content Include="NuGetGallery\src\Bootstrap\dist\css\bootstrap.css" />
     <Content Include="NuGetGallery\src\Bootstrap\dist\css\bootstrap-theme.css" />
     <Content Include="NuGetGallery\src\NuGetGallery\Views\**" />
+    <Content Remove="NuGetGallery\src\nugetcdnredirect\web.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="ApplicationInsights.config">
@@ -140,7 +141,7 @@
     <Content Include="Views\Admin\_Edit.cshtml" />
     <Content Include="Views\Admin\_AddStatusEventMessage.cshtml" />
     <Content Include="Views\Admin\_EditStatusEventMessage.cshtml" />
-    <Content Include="Views\Admin\_EditStatusEvent.cshtml" />
+    <Content Include="Views\Admin\_EditStatusEvent.cshtml" /> 
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Data\**" />

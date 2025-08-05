@@ -195,6 +195,8 @@
     <PackageReference Include="Microsoft.Owin.StaticFiles">
       <Version>4.2.2</Version>
     </PackageReference>
+    <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="5.7.0"/>
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.7.0"/>
     <PackageReference Include="Microsoft.WindowsAzure.ConfigurationManager">
       <Version>3.1.0</Version>
     </PackageReference>

@@ -180,16 +180,16 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Owin.Host.SystemWeb">
-      <Version>4.2.2</Version>
+      <Version>4.2.3</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Owin.Security.Cookies">
-      <Version>4.2.2</Version>
+      <Version>4.2.3</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Owin.Security.OpenIdConnect">
-      <Version>4.2.2</Version>
+      <Version>4.2.3</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Owin.StaticFiles">
-      <Version>4.2.2</Version>
+      <Version>4.2.3</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.WindowsAzure.ConfigurationManager">
       <Version>3.1.0</Version>
@@ -197,6 +197,8 @@
     <PackageReference Include="Moment.js">
       <Version>2.29.4</Version>
     </PackageReference>
+    <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="5.7.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.7.0" />
     <PackageReference Include="NuGet.Services.Configuration">
       <Version>5.0.0-main-10966166</Version>
     </PackageReference>

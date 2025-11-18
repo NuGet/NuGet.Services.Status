@@ -94,7 +94,7 @@
 
 @helper CookieComplianceScript(IHtmlString cspNonce)
 {
-    <script src="https://wcpstatic.microsoft.com/mscc/lib/v2/wcp-consent.js" nonce="@cspNonce"></script>
+    // The cookie compliance script is not needed on the status page.
 }
 
 @helper PostLink(

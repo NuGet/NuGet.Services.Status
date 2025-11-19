@@ -85,7 +85,7 @@
             @if (isAggregate)
             {
                 <td>
-                    <a class="@(shouldExpand ? "" : "collapsed")" href="#" role="button" data-toggle="collapse" data-target="#@containerId"
+                    <a class="status-btn @(shouldExpand ? "" : "collapsed")" href="#" role="button" data-toggle="collapse" data-target="#@containerId"
                        aria-expanded="@(shouldExpand ? "true" : "false")" aria-controls="@containerId" id="show-@containerId">
                         <i class="ms-Icon ms-Icon--@(shouldExpand ? "ChevronDown" : "ChevronRight")" aria-hidden="true"></i>
                         <span>@component.Name</span>

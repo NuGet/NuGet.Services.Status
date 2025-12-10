@@ -119,6 +119,11 @@ namespace NuGet.Status.Helpers
             return BaseUrl + "/account/Organizations";
         }
 
+        public static string ManageMyTrustedPublishing(this UrlHelper url, bool relativeUrl = true)
+        {
+            return BaseUrl + "/account/TrustedPublishing";
+        }
+
         public static string Current(this UrlHelper url)
         {
             return url.RequestContext.HttpContext.Request.RawUrl;

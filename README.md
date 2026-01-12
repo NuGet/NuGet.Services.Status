@@ -8,7 +8,7 @@ Set up your DEV environment:
 
 ```scripts\Setup-LocalEnvironment.ps1```
 
-Pull requests should be based on the `dev` branch. Once a release is planned, the `dev` branch or specific, cherry-picked changes, can flow to `master`.
+Pull requests should be based on the `dev` branch. Once qweqwea release is planned, the `dev` branch or specific, cherry-picked changes, can flow to `master`.
 
 ## Trademarks
 

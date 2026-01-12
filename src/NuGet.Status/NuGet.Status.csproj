@@ -89,6 +89,7 @@
     <Compile Include="NuGetGallery\src\NuGetGallery\GalleryConstants.cs" />
     <Compile Include="NuGetGallery\src\NuGetGallery.Services\Extensions\DateTimeExtensions.cs" />
     <Compile Include="NuGetGallery\src\NuGetGallery\Helpers\StringExtensions.cs" />
+    <Compile Include="NuGetGallery\src\NuGetGallery\Helpers\CSPHelper.cs" />
     <Compile Include="Extensions\ComponentExtensions.cs" />
     <Compile Include="Utilities\QuietLog.cs" />
     <Compile Include="Global.asax.cs">
